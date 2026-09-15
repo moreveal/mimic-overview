@@ -3,10 +3,13 @@ interface Props { compact?: boolean }
 const { compact = false } = Astro.props;
 ---
 <span class="logo" aria-label="Mimic">
-  <svg viewBox="0 0 58 30" aria-hidden="true"><path d="M2 27V3l13 15L29 3v24M29 3l13 15L56 3v24" /></svg>
+  <svg viewBox="0 0 61 30" aria-hidden="true">
+    <path d="M2 27V3l12.5 15L27 3v24" stroke="#38bfff" />
+    <path d="M34 27V3l12.5 15L59 3v24" stroke="#347fff" />
+  </svg>
   {!compact && <span>mimic</span>}
 </span>
 <style>
-  .logo { display: inline-flex; align-items: center; gap: 8px; color: #f7f8fa; font-family: Arial, Helvetica, sans-serif; font-size: 1.45rem; font-weight: 700; font-style: normal; letter-spacing: 0; line-height: 1; }
-  svg { width: 58px; height: 30px; fill: none; stroke: #2c91ff; stroke-width: 2.35; stroke-linecap: square; stroke-linejoin: miter; }
+  .logo { display: inline-flex; align-items: center; gap: 6px; color: #f5f7fa; font-family: var(--sans); font-size: 1.5rem; font-weight: 730; font-style: normal; letter-spacing: -.04em; line-height: 1; }
+  svg { width: 64px; height: 32px; fill: none; stroke-width: 3.65; stroke-linecap: square; stroke-linejoin: miter; }
 </style>
