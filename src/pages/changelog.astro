@@ -1,0 +1,15 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import releaseNotes from "../../RELEASE_NOTES.md?raw";
+import { marked } from "marked";
+const rendered = await marked.parse(releaseNotes);
+---
+<BaseLayout title="Changelog — Mimic" description="Release notes for Mimic public beta builds.">
+  <section class="page-head container"><span class="eyebrow">Release history</span><h1>Changelog.</h1><p>What changed in each public beta build.</p></section>
+  <section class="container changelog-wrap"><article class="prose panel" set:html={rendered} /><aside><span>Current release</span><strong>v0.1.2</strong><a class="button button-primary" href="https://github.com/moreveal/mimic-overview/releases/latest">Download latest</a><a href="https://github.com/moreveal/mimic-overview/releases">All GitHub releases →</a></aside></section>
+</BaseLayout>
+<style>
+  .page-head { padding: 75px 0 52px; border-bottom: 1px solid var(--line); }.page-head h1 { margin: 12px 0 8px; font-size: clamp(3rem,7vw,5.8rem); line-height: 1; letter-spacing: -.06em; }.page-head p { margin: 0; color: var(--muted); font-size: 1.15rem; }
+  .changelog-wrap { display: grid; grid-template-columns: minmax(0,780px) 240px; justify-content: space-between; gap: 60px; padding-block: 60px 110px; }.changelog-wrap article { padding: 32px; }.changelog-wrap :global(h1) { margin-top: 0; color: #fff; font-size: 2rem; }.changelog-wrap aside { display: flex; flex-direction: column; align-self: start; position: sticky; top: 24px; gap: 10px; padding: 20px; border-top: 1px solid var(--line); }.changelog-wrap aside > span { color: var(--quiet); font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; }.changelog-wrap aside strong { font-size: 2.3rem; }.changelog-wrap aside > a:last-child { margin-top: 7px; color: var(--blue-bright); font-size: .85rem; }
+  @media (max-width:760px) { .changelog-wrap { grid-template-columns: 1fr; }.changelog-wrap aside { position: static; order: -1; }.changelog-wrap article { padding: 22px; } }
+</style>

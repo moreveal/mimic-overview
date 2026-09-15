@@ -1,0 +1,166 @@
+---
+import DocsLayout from "@/layouts/DocsLayout.astro";
+---
+<DocsLayout title="Documentation" description="Install Mimic, connect Playwright or Puppeteer over CDP, configure environment profiles, and use the Mimic control commands.">
+  <span class="eyebrow">Documentation</span>
+  <h1>Build with Mimic.</h1>
+  <p class="lead">Start the local browser runtime, connect a standard automation client over CDP, and configure the observable environment your workflow needs.</p>
+
+  <div class="callout"><strong>Mimic is not a JavaScript SDK.</strong> The primary interface is a local CDP endpoint. Use normal Playwright, Puppeteer, or raw CDP calls; the custom <code>Mimic.*</code> commands provide runtime-specific configuration and control.</div>
+
+  <h2 id="getting-started">Getting started</h2>
+  <p>Download the latest Windows or Linux archive from <a href="https://github.com/moreveal/mimic-overview/releases/latest">GitHub Releases</a>, verify it against the included <code>SHA256SUMS</code>, and extract it. No Chrome, Go, Rust, display server, or GPU is required for the packaged executable.</p>
+  <table><thead><tr><th>Platform</th><th>Runtime requirements</th></tr></thead><tbody><tr><td>Windows amd64</td><td>Verified on Windows 11. Run <code>mimic.exe</code>.</td></tr><tr><td>Linux amd64</td><td>glibc 2.39+, libgcc_s, and installed Liberation, DejaVu, or Noto fonts. Ubuntu 24.04+.</td></tr></tbody></table>
+  <pre><code>{`# Windows
+.\\mimic.exe --listen 127.0.0.1:9222
+
+# Linux
+./mimic --listen 127.0.0.1:9222`}</code></pre>
+  <p>Keep the process running while your client is connected. The endpoint has no authentication and is intended for trusted local clients.</p>
+
+  <h2 id="playwright">Playwright</h2>
+  <p>Install <code>playwright-core</code> so the client does not download a browser:</p>
+  <pre><code>{`npm install playwright-core
+
+import { chromium } from "playwright-core";
+
+const browser = await chromium.connectOverCDP("http://127.0.0.1:9222");
+try {
+  const context = browser.contexts()[0];
+  const page = await context.newPage();
+  await page.goto("https://example.com/", { waitUntil: "load" });
+  console.log(await page.locator("h1").textContent());
+} finally {
+  // This disconnects the client; it does not own the Mimic process.
+  await browser.close();
+}`}</code></pre>
+  <p>Wait for an application-specific element or state when hydration continues after the load event. Supported workflows include locators, forms, fetch-driven DOM updates, frames, Shadow DOM, popups, cookies, history, multiple Pages, and network events; this is not a promise that every Playwright feature is available.</p>
+
+  <h2 id="puppeteer">Puppeteer</h2>
+  <pre><code>{`npm install puppeteer-core@25.10.0
+
+import puppeteer from "puppeteer-core";
+
+const browser = await puppeteer.connect({
+  browserURL: "http://127.0.0.1:9222",
+  defaultViewport: null
+});
+const page = await browser.newPage();
+await page.goto("https://example.com/", { waitUntil: "load" });
+console.log(await page.$eval("h1", node => node.textContent));
+await page.close();
+await browser.disconnect();`}</code></pre>
+
+  <h2 id="cli">CLI reference</h2>
+  <table><thead><tr><th>Flag</th><th>Default</th><th>Purpose</th></tr></thead><tbody>
+    <tr><td><code>--listen</code></td><td><code>127.0.0.1:9222</code></td><td>CDP HTTP and WebSocket address.</td></tr>
+    <tr><td><code>--chrome</code></td><td><code>152</code></td><td>Loaded Chrome compatibility milestone. It does not install Chrome.</td></tr>
+    <tr><td><code>--profile</code></td><td>none</td><td>JSON environment profile for new contexts.</td></tr>
+    <tr><td><code>--browser-mode</code></td><td><code>headful</code></td><td>Chooses the environment profile; it does not open a window.</td></tr>
+    <tr><td><code>--engine</code></td><td><code>v8</code></td><td>JavaScript engine: <code>v8</code>, <code>quickjs</code>, or <code>goja</code>. Fallbacks do not promise V8 equivalence.</td></tr>
+    <tr><td><code>--navigation-timeout</code></td><td><code>0</code></td><td>Optional navigation execution cap. Zero waits until completion or cancellation.</td></tr>
+    <tr><td><code>--dev-preview</code></td><td><code>false</code></td><td>Enables the visual debug viewer at <code>/debug/preview/</code>; this is not native rendering.</td></tr>
+  </tbody></table>
+
+  <h2 id="profiles">Environment profiles</h2>
+  <p>Schema version 1 configures a BrowserContext before its first page loads. Pages, frames, and new workers inherit the Context environment. Full replacement requires a new Context; existing cookies, documents, and JavaScript are not migrated.</p>
+  <pre><code>{`{
+  "schemaVersion": 1,
+  "baseProfile": "chrome-152-windows-x64-headful-controlled-v1",
+  "display": { "width": 1920, "height": 1080, "deviceScaleFactor": 1 },
+  "window": { "viewportWidth": 1280, "viewportHeight": 720 },
+  "hardware": { "logicalProcessors": 8, "deviceMemoryGB": 8 },
+  "locale": {
+    "languages": ["en-US", "en"],
+    "timezone": "America/New_York",
+    "intlLocale": "en-US"
+  },
+  "preferences": { "colorScheme": "dark", "reducedMotion": false }
+}`}</code></pre>
+  <p>Unknown fields, nulls, wrong types, and unsupported custom values return explicit validation errors. Objects merge named members into the base; arrays replace their complete value. Query <code>Mimic.getProfileSchema</code> for the exact base profile and machine-readable field contract.</p>
+
+  <h2 id="profile-fields">Profile fields</h2>
+  <table><thead><tr><th>Group</th><th>Configures</th><th>Mutation boundary</th></tr></thead><tbody>
+    <tr><td><code>display</code>, <code>window</code></td><td>Screen, available area, DPR, orientation, outer size, viewport</td><td>Most geometry is dynamic; color depth is creation-only.</td></tr>
+    <tr><td><code>identity</code></td><td>User agent, platform, Client Hints metadata</td><td>Dynamic; does not install another Chrome implementation.</td></tr>
+    <tr><td><code>hardware</code></td><td>Reported CPU count, memory bucket, performance class</td><td>Creation-only observations, not physical allocation.</td></tr>
+    <tr><td><code>locale</code></td><td>Languages, Accept-Language reduction, timezone, Intl locale</td><td>Languages are dynamic; timezone and Intl locale require a new Context.</td></tr>
+    <tr><td><code>graphics</code>, <code>fonts</code></td><td>Reported adapter/capability and font baseline</td><td>Selected values are read-only or reject unsupported customization.</td></tr>
+    <tr><td><code>preferences</code></td><td>Color scheme, reduced motion, DNT</td><td>Theme and motion are dynamic; DNT is creation-only.</td></tr>
+    <tr><td><code>network</code></td><td>Connection observations, proxy, cookies, modeled ICE</td><td>Proxy and full network environment require a new Context.</td></tr>
+    <tr><td><code>permissions</code>, <code>capabilities</code></td><td>Initial permissions, quota, keyboard layout</td><td>Creation-only; unavailable physical backends remain unsupported.</td></tr>
+    <tr><td><code>features</code></td><td>Restrictions on existing exposure flags</td><td>Can restrict captured features, not enable uncaptured ones.</td></tr>
+    <tr><td><code>timing</code></td><td>Execution, navigation, and network scale factors</td><td>Creation-only; no arbitrary clock epoch injection.</td></tr>
+  </tbody></table>
+
+  <h2 id="mimic-commands">Mimic.* commands</h2>
+  <p>Send these custom commands through a browser or page CDP session. They supplement standard CDP; they are not a separate public JavaScript SDK.</p>
+  <div class="command-grid">
+    <div class="api-card"><h3><code>Mimic.getProfileSchema</code><span class="tag core">configuration</span></h3><p>Returns the profile JSON Schema, available base profiles, mutability annotations, and limitations.</p><div class="signature">params: &#123;&#125; → &#123; schema, baseProfiles, limitations &#125;</div></div>
+    <div class="api-card"><h3><code>Mimic.validateProfile</code><span class="tag core">configuration</span></h3><p>Validates and normalizes a profile without creating a Context. Unsupported values appear in diagnostics rather than silently changing behavior.</p><div class="signature">params: &#123; profile &#125; → &#123; profile, diagnostics &#125;</div></div>
+    <div class="api-card"><h3><code>Mimic.createContext</code><span class="tag core">configuration</span></h3><p>Creates an isolated BrowserContext with its own profile and connection pool.</p><div class="signature">params: &#123; profile, disposeOnDetach? &#125; → &#123; browserContextId &#125;</div></div>
+    <div class="api-card"><h3><code>Mimic.getProfile</code><span class="tag core">configuration</span></h3><p>Returns a defensive projection of the effective Context profile or a target profile including Page overrides.</p><div class="signature">params: exactly one of &#123; browserContextId &#125; or &#123; targetId &#125; → &#123; profile, … &#125;</div></div>
+    <div class="api-card"><h3><code>Mimic.updateProfile</code><span class="tag core">configuration</span></h3><p>Atomically patches dynamic Page fields. A creation-only field rejects the entire patch with <code>requiresNewContext</code>.</p><div class="signature">params: &#123; targetId, patch &#125; → updated profile result</div></div>
+    <div class="api-card"><h3><code>Mimic.resetProfileOverrides</code><span class="tag core">configuration</span></h3><p>Restores a Page to its BrowserContext profile baseline.</p><div class="signature">params: &#123; targetId &#125; → effective baseline profile</div></div>
+    <div class="api-card"><h3><code>Mimic.captureSnapshot</code><span class="tag">capture</span></h3><p>Captures current static DOM and available assets from canonical Page state. This is not a screenshot and excludes scripts, embedded frames, and rendered pixels.</p><div class="signature">params: &#123; interrupt? &#125; → snapshot payload</div></div>
+    <div class="api-card"><h3><code>Mimic.setViewport</code><span class="tag">page control</span></h3><p>Applies supported viewport changes through the same Page environment used by standard Emulation commands.</p><div class="signature">params: page viewport fields → effective viewport</div></div>
+    <div class="api-card"><h3><code>Mimic.getCompatibilityMatrix</code><span class="tag">introspection</span></h3><p>Returns generated CDP command/event status, scope notes, and evidence references. Schema presence alone is not semantic support.</p><div class="signature">params: &#123;&#125; → generated compatibility inventory</div></div>
+    <div class="api-card"><h3><code>Mimic.getStatus</code><span class="tag">diagnostic</span></h3><p>Returns a lightweight snapshot of current Page execution and navigation state for progress monitoring.</p><div class="signature">params: &#123;&#125; → current status</div></div>
+    <div class="api-card"><h3><code>Mimic.getDiagnostics</code><span class="tag">diagnostic</span></h3><p>Returns runtime and navigation diagnostics useful when a workflow stops making progress.</p><div class="signature">params: &#123;&#125; → diagnostic state</div></div>
+    <div class="api-card"><h3><code>Mimic.getTrace</code><span class="tag">diagnostic</span></h3><p>Returns retained scheduler, resource, and semantic events for debugging supported workflows.</p><div class="signature">params: &#123;&#125; → &#123; events, … &#125;</div></div>
+    <div class="api-card"><h3><code>Mimic.clearTrace</code><span class="tag">diagnostic</span></h3><p>Clears the retained diagnostic trace for the selected session/Page.</p><div class="signature">params: &#123;&#125; → acknowledgement</div></div>
+    <div class="api-card"><h3><code>Mimic.cancelExecution</code><span class="tag">advanced</span></h3><p>Requests cancellation of current Page execution when a client needs to recover from a busy turn.</p><div class="signature">params: command-specific cancellation options → acknowledgement/status</div></div>
+    <div class="api-card"><h3><code>Mimic.pause</code><span class="tag">advanced</span></h3><p>Pauses supported Page processing at the runtime control boundary.</p><div class="signature">params: &#123;&#125; → acknowledgement</div></div>
+    <div class="api-card"><h3><code>Mimic.resume</code><span class="tag">advanced</span></h3><p>Resumes Page processing after a matching pause.</p><div class="signature">params: &#123;&#125; → acknowledgement</div></div>
+  </div>
+  <div class="callout">Unknown methods return CDP error <code>-32601</code>; invalid parameters return <code>-32602</code>. Known schema methods without implemented semantics return an explicit unsupported error.</div>
+
+  <h2 id="proxies">Native proxies</h2>
+  <pre><code>{`{
+  "network": {
+    "proxy": {
+      "server": "socks5://127.0.0.1:1080",
+      "username": "user",
+      "password": "password"
+    }
+  }
+}`}</code></pre>
+  <p>SOCKS5, HTTP, and HTTPS proxy URLs are supported. Keep credentials in separate fields and out of public files. A proxy failure never falls back to a direct connection. Proxy mode disables QUIC and routes resource-loader HTTP(S), including worker fetch; it does not route UDP/WebRTC.</p>
+
+  <h2 id="contexts">Multiple contexts</h2>
+  <pre><code>{`const cdp = await browser.target().createCDPSession();
+const { diagnostics } = await cdp.send("Mimic.validateProfile", { profile });
+const { browserContextId } = await cdp.send("Mimic.createContext", {
+  profile,
+  disposeOnDetach: true
+});
+try {
+  const { targetId } = await cdp.send("Target.createTarget", {
+    browserContextId,
+    url: "about:blank"
+  });
+  await cdp.send("Mimic.updateProfile", {
+    targetId,
+    patch: { window: { viewportWidth: 900, viewportHeight: 600 } }
+  });
+} finally {
+  await cdp.send("Target.disposeBrowserContext", { browserContextId });
+}`}</code></pre>
+  <p>Set the complete profile before creating or navigating the target. A Context is a state boundary, not a security sandbox for hostile tenants.</p>
+
+  <h2 id="compatibility">Compatibility boundaries</h2>
+  <p>Mimic models observable browser state without a native rendering pipeline. Use a full browser when pixels are the desired output.</p>
+  <ul><li>No screenshots, rendered PDFs, video playback, or Canvas/WebGL pixel output.</li><li>Modeled geometry and input are not complete CSS layout, clipping, rich editing, touch, drag, or arbitrary transforms.</li><li>CDP and Web API coverage is partial. Generated names and wire schema do not imply implemented semantics.</li><li>Compatibility checks describe specific workflows—not every website, client option, or anti-bot decision.</li><li>The CDP endpoint has no authentication; bind it only where trusted clients can reach it.</li></ul>
+
+  <h2 id="troubleshooting">Troubleshooting</h2>
+  <h3>The client cannot connect</h3><p>Confirm Mimic prints its listening URL, keep the process alive, and use the same HTTP origin in <code>connectOverCDP</code> or <code>browserURL</code>. Avoid exposing the unauthenticated endpoint publicly.</p>
+  <h3>The application loaded but is not ready</h3><p>The browser load event can precede hydration. Wait for a selector, text, or application state that represents readiness instead of relying only on <code>waitUntil: "load"</code>.</p>
+  <h3>A command is unsupported</h3><p>Query <code>Mimic.getCompatibilityMatrix</code> and reduce the workflow to the command and observable behavior it needs. A command accepted for client initialization may still have an explicit unsupported boundary.</p>
+  <h3>Linux text geometry differs</h3><p>Install Liberation, DejaVu, or Noto fonts. Exact Windows text metrics require matching legally available reference fonts.</p>
+
+  <h2 id="faq">FAQ</h2>
+  <h3>Is Mimic headless Chrome?</h3><p>No. It uses V8 for JavaScript but does not embed or launch Chromium.</p>
+  <h3>Does every website work?</h3><p>No. Compatibility is actively expanding and depends on the APIs, loading behavior, and interactions a workflow uses.</p>
+  <h3>Can I run untrusted code?</h3><p>No. Mimic is not a security sandbox, and separate Pages are not hostile-tenant security boundaries.</p>
+  <h3>Is Mimic open source?</h3><p>Implementation sources remain private. The public overview, benchmarks, and MIT-licensed client examples are available on GitHub. Mimic uses PolyForm Shield 1.0.0.</p>
+</DocsLayout>

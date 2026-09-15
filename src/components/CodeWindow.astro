@@ -1,0 +1,33 @@
+---
+import { Copy } from "lucide-astro";
+import { codeToHtml } from "shiki";
+interface Props { title?: string; code: string; label?: string; lang?: string; }
+const { title = "Terminal", code, label = "Copy code", lang = "javascript" } = Astro.props;
+const highlighted = await codeToHtml(code, { lang, theme: "github-dark-default" });
+---
+<div class="code-window panel">
+  <div class="code-titlebar"><span class="lights"><i></i><i></i><i></i></span><span>{title}</span><button type="button" aria-label={label} data-copy={code}><Copy size={17} strokeWidth={1.8} /><span class="copy-label">Copy</span></button></div>
+  <div class="highlighted" set:html={highlighted}></div>
+</div>
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(button.dataset.copy || "");
+      const label = button.querySelector<HTMLElement>(".copy-label");
+      if (label) { label.textContent = "Copied"; setTimeout(() => label.textContent = "Copy", 1500); }
+    });
+  });
+</script>
+<style>
+  .code-window { overflow: hidden; box-shadow: 0 28px 90px rgba(0,0,0,.3); }
+  .code-titlebar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 44px; padding: 0 14px; border-bottom: 1px solid var(--line); color: #aeb7c3; font-size: .82rem; }
+  .lights { display: flex; gap: 8px; }
+  .lights i { width: 12px; height: 12px; border-radius: 50%; background: var(--red); }
+  .lights i:nth-child(2) { background: #ffc629; }.lights i:nth-child(3) { background: #2fd561; }
+  button { justify-self: end; display: inline-flex; align-items: center; gap: 6px; padding: 6px; border: 0; border-radius: 5px; background: transparent; color: #c9d1db; cursor: pointer; }
+  button:hover { background: #151a1f; color: #fff; }
+  .copy-label { font-size: .75rem; }
+  .highlighted :global(pre) { margin: 0; padding: 22px; overflow: auto; background: transparent !important; font-size: clamp(.78rem, 1.15vw, .94rem); line-height: 1.6; tab-size: 2; }
+  .highlighted :global(code) { display: block; width: max-content; min-width: 100%; font-family: var(--mono); }
+  @media (max-width: 520px) { .copy-label { position: absolute; clip: rect(0 0 0 0); } .code-titlebar { grid-template-columns: 1fr auto 1fr; } .highlighted :global(pre) { padding: 16px; } }
+</style>

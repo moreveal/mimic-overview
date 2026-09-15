@@ -1,0 +1,8 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Page not found — Mimic" description="The requested Mimic page could not be found.">
+  <section class="not-found container"><span>404</span><h1>This page doesn’t exist.</h1><p>The runtime is listening. This route isn’t.</p><div><a class="button button-primary" href={base}>Back to Mimic</a><a class="button" href={`${base}docs/`}>Read the docs</a></div></section>
+</BaseLayout>
+<style>.not-found { min-height: 68vh; display: grid; place-content: center; justify-items: start; padding-block: 80px; }.not-found > span { color: var(--blue); font: 750 1rem var(--mono); }.not-found h1 { margin: 12px 0; font-size: clamp(3rem,8vw,6rem); line-height: 1; letter-spacing: -.06em; }.not-found p { margin: 0 0 28px; color: var(--muted); font-size: 1.15rem; }.not-found div { display: flex; flex-wrap: wrap; gap: 12px; }</style>

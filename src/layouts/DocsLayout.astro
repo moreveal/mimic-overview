@@ -1,0 +1,42 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+interface Props { title: string; description: string; }
+const { title, description } = Astro.props;
+const nav = [
+  ["Getting started", "getting-started"], ["Playwright", "playwright"], ["Puppeteer", "puppeteer"],
+  ["CLI reference", "cli"], ["Environment profiles", "profiles"], ["Profile fields", "profile-fields"],
+  ["Mimic.* commands", "mimic-commands"], ["Proxies", "proxies"], ["Multiple contexts", "contexts"],
+  ["Compatibility", "compatibility"], ["Troubleshooting", "troubleshooting"], ["FAQ", "faq"]
+];
+---
+<BaseLayout title={`${title} — Mimic Docs`} description={description}>
+  <div class="docs-shell container">
+    <aside>
+      <div class="aside-heading"><span>Documentation</span><button type="button" aria-expanded="false" aria-controls="docs-nav">Browse sections <i>⌄</i></button></div>
+      <nav id="docs-nav" aria-label="Documentation sections">
+        {nav.map(([label,id]) => <a href={`#${id}`}>{label}</a>)}
+      </nav>
+      <div class="aside-note"><strong>Public beta · v0.1.2</strong><span>Windows & Linux amd64</span></div>
+    </aside>
+    <article class="docs-content prose"><slot /></article>
+    <div class="on-page"><span>On this page</span>{nav.slice(3,9).map(([label,id]) => <a href={`#${id}`}>{label}</a>)}</div>
+  </div>
+</BaseLayout>
+<script>
+  const button = document.querySelector<HTMLButtonElement>(".aside-heading button");
+  const nav = document.querySelector<HTMLElement>("#docs-nav");
+  button?.addEventListener("click", () => { const open = button.getAttribute("aria-expanded") === "true"; button.setAttribute("aria-expanded", String(!open)); nav?.toggleAttribute("data-open", !open); });
+  nav?.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => { button?.setAttribute("aria-expanded", "false"); nav.removeAttribute("data-open"); }));
+</script>
+<style>
+  .docs-shell { display: grid; grid-template-columns: 220px minmax(0,760px) 170px; justify-content: space-between; gap: 45px; padding-top: 58px; padding-bottom: 110px; }
+  aside,.on-page { position: sticky; top: 24px; align-self: start; }
+  .aside-heading > span,.on-page > span { display: block; margin-bottom: 14px; color: #fff; font-size: .78rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
+  .aside-heading button { display: none; }
+  aside nav a,.on-page a { display: block; padding: 6px 10px; border-left: 1px solid var(--line); color: var(--quiet); font-size: .84rem; }
+  aside nav a:hover,.on-page a:hover { border-color: var(--blue); color: #fff; }
+  .aside-note { display: flex; flex-direction: column; margin-top: 30px; padding: 14px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); font-size: .76rem; }.aside-note strong { color: var(--green); }.aside-note span { color: var(--quiet); }
+  .docs-content :global(h1) { margin: 0 0 18px; font-size: clamp(2.7rem,6vw,4.4rem); letter-spacing: -.055em; }.docs-content :global(.lead) { margin: 0 0 42px; color: #b5c0cf; font-size: 1.18rem; }.docs-content :global(.callout) { margin: 24px 0; padding: 16px 18px; border-left: 2px solid var(--blue); background: #09111a; color: #bac9d9; }.docs-content :global(.command-grid) { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 22px; }.docs-content :global(.api-card) { padding: 19px; border: 1px solid var(--line); border-radius: 8px; background: linear-gradient(135deg,#0b0f12,#080a0c); }.docs-content :global(.api-card h3) { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; margin: 0 0 8px; }.docs-content :global(.api-card h3 code) { color: var(--cyan); }.docs-content :global(.tag) { padding: 3px 7px; border: 1px solid #33404c; border-radius: 12px; color: #9aabba; font: 650 .65rem var(--sans); text-transform: uppercase; }.docs-content :global(.tag.core) { border-color: #145da2; color: var(--blue-bright); }.docs-content :global(.api-card p) { margin: 6px 0; }.docs-content :global(.signature) { color: #8f9cab; font-family: var(--mono); font-size: .78rem; overflow-wrap: anywhere; }
+  @media (max-width: 1080px) { .docs-shell { grid-template-columns: 200px minmax(0,1fr); }.on-page { display: none; } }
+  @media (max-width: 760px) { .docs-shell { display: block; padding-top: 30px; }.docs-shell aside { position: relative; top: auto; margin-bottom: 38px; }.aside-heading { display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--line); }.aside-heading > span { margin: 0; }.aside-heading button { display: block; padding: 7px 0; border: 0; background: transparent; color: var(--muted); }.aside-heading button i { color: var(--blue); } aside nav { display: none; grid-template-columns: 1fr 1fr; padding: 10px 0; } aside nav[data-open] { display: grid; }.aside-note { display: none; } }
+</style>

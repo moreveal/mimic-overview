@@ -1,0 +1,38 @@
+---
+import Logo from "./Logo.astro";
+const base = import.meta.env.BASE_URL;
+const year = new Date().getFullYear();
+const groups = [
+  { title: "Product", links: [["Docs", `${base}docs/`], ["Changelog", `${base}changelog/`], ["Benchmarks", `${base}#benchmarks`], ["Releases", "https://github.com/moreveal/mimic-overview/releases"]] },
+  { title: "Resources", links: [["Examples", "https://github.com/moreveal/mimic-overview/tree/main/examples"], ["GitHub", "https://github.com/moreveal/mimic-overview"], ["Report an issue", "https://github.com/moreveal/mimic-overview/issues"], ["Discord · moreveal", "https://discord.com/users/moreveal"]] },
+  { title: "Legal", links: [["License", "https://github.com/moreveal/mimic-overview/blob/main/LICENSE.md"], ["Privacy", `${base}privacy/`]] },
+];
+---
+<footer>
+  <div class="container footer-main">
+    <div class="footer-brand">
+      <Logo />
+      <p>Browser logic, without the rendering pipeline.</p>
+      <span>Public beta for Windows and Linux.</span>
+    </div>
+    <div class="footer-links">
+      {groups.map((group) => <div><h2>{group.title}</h2>{group.links.map(([label, href]) => <a href={href}>{label}</a>)}</div>)}
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© {year} Mimic.</span>
+    <span>Built against a measured Chrome 152 reference.</span>
+  </div>
+</footer>
+<style>
+  footer { border-top: 1px solid var(--line); padding: 64px 0 24px; background: #040606; }
+  .footer-main { display: grid; grid-template-columns: 1.2fr 1fr; gap: 64px; }
+  .footer-brand p { max-width: 350px; margin: 18px 0 6px; color: #c1cad6; }
+  .footer-brand > span, .footer-bottom { color: var(--quiet); font-size: .86rem; }
+  .footer-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+  .footer-links h2 { margin: 0 0 14px; color: #fff; font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; }
+  .footer-links a { display: block; padding: 5px 0; color: var(--muted); font-size: .92rem; }
+  .footer-links a:hover { color: #fff; }
+  .footer-bottom { display: flex; justify-content: space-between; gap: 20px; margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line); }
+  @media (max-width: 760px) { .footer-main { grid-template-columns: 1fr; } .footer-links { grid-template-columns: repeat(2, 1fr); } .footer-bottom { flex-direction: column; } }
+</style>

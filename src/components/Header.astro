@@ -1,0 +1,54 @@
+---
+import Logo from "./Logo.astro";
+import { Download } from "lucide-astro";
+const base = import.meta.env.BASE_URL;
+const path = Astro.url.pathname;
+const links = [
+  { label: "Docs", href: `${base}docs/` },
+  { label: "GitHub", href: "https://github.com/moreveal/mimic-overview", external: true },
+  { label: "Changelog", href: `${base}changelog/` },
+];
+---
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a class="brand" href={base} aria-label="Mimic home"><Logo /></a>
+    <button class="menu-button" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span>
+    </button>
+    <nav id="site-nav" aria-label="Primary navigation">
+      {links.map((link) => <a href={link.href} aria-current={!link.external && path === link.href ? "page" : undefined}>{link.label}</a>)}
+      <a class="download" href="https://github.com/moreveal/mimic-overview/releases/latest">
+        <Download size={19} strokeWidth={2} />
+        Download
+      </a>
+    </nav>
+  </div>
+</header>
+<script>
+  const button = document.querySelector<HTMLButtonElement>(".menu-button");
+  const nav = document.querySelector<HTMLElement>("#site-nav");
+  button?.addEventListener("click", () => {
+    const open = button.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", String(!open));
+    button.setAttribute("aria-label", open ? "Open navigation" : "Close navigation");
+    nav?.toggleAttribute("data-open", !open);
+  });
+</script>
+<style>
+  .site-header { height: 88px; display: flex; align-items: center; }
+  .nav-wrap { display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: inline-flex; }
+  nav { display: flex; align-items: center; gap: 34px; color: #bdc6d4; font-size: .93rem; }
+  nav > a:not(.download):hover, nav > a[aria-current="page"] { color: #fff; }
+  .download { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; padding: 0 17px; border-radius: 7px; background: linear-gradient(135deg,#55a8ff,#2c91ff); color: #00172d; font-weight: 750; }
+  .menu-button { display: none; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); }
+  .menu-button span { display: block; width: 19px; height: 1px; margin: 5px auto; background: #fff; }
+  @media (max-width: 760px) {
+    .site-header { height: 72px; }
+    .menu-button { display: block; }
+    nav { display: none; position: absolute; z-index: 20; top: 66px; left: 14px; right: 14px; align-items: stretch; flex-direction: column; gap: 0; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: rgba(8,11,13,.98); box-shadow: 0 20px 60px #000; }
+    nav[data-open] { display: flex; }
+    nav a { padding: 13px; }
+    .download { margin-top: 6px; justify-content: center; }
+  }
+</style>
