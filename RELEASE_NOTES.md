@@ -1,16 +1,15 @@
-# Mimic v0.1.2
+# Mimic v0.1.3
 
-Changes since v0.1.1:
+Changes since v0.1.2:
 
-- Playwright can now click actionable controls inside iframes and observe
-  asynchronously opened popup pages through the normal `popup` event.
-- Network request events expose POST bodies in both legacy `postData` and modern
-  `postDataEntries` forms for compatibility across Playwright versions.
-- DOM/CDP integration now resolves iframe owner nodes, rendered `innerText`,
-  customized built-in elements, and `ReportingObserver` lifecycle behavior.
-- Element resource loading, preload cancellation, CSS-connected font loading,
-  and nested-frame focus now share their canonical page state.
-- Observable Canvas, Web Audio, WebGPU, CSS, and HTML attribute behavior has
-  been expanded while preserving realm isolation and coherent readbacks.
-- Child-process shutdown now stops the Mimic server, and the development preview
-  projects child frames by their canonical owner identity.
+This release improves the runtime's efficiency and broadens its compatibility
+with real-world browser automation workflows. It brings faster page and DOM
+operations, more complete frame and popup handling, richer network and resource
+observations, and continued refinement of browser-visible behavior across the
+DOM, CSS, media, and platform-facing APIs. The release also strengthens state
+ownership and lifecycle handling, helping independent pages remain isolated and
+reliable under concurrent use.
+
+As before, Mimic is a lightweight public beta for Windows and Linux amd64. It
+does not render pages and is intended for workloads that need browser logic,
+state, and CDP automation without embedding Chromium.
