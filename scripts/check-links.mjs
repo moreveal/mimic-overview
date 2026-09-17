@@ -22,7 +22,8 @@ for (const file of htmlFiles) {
     if (/^(?:https?:|mailto:|#|data:|\/\/)/.test(value)) continue;
     const clean = value.split(/[?#]/)[0];
     let target;
-    if (clean.startsWith("/mimic/")) target = join(root, clean.slice("/mimic/".length));
+    if (clean.startsWith("/mimic-overview/"))
+      target = join(root, clean.slice("/mimic-overview/".length));
     else target = resolve(dirname(file), clean);
     const candidates = [target, join(target, "index.html"), `${target}.html`];
     if (!candidates.some(existsSync)) failures.push(`${file}: ${value}`);
