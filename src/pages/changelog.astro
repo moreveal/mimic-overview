@@ -6,7 +6,7 @@ const rendered = await marked.parse(releaseNotes);
 ---
 <BaseLayout title="Changelog — Mimic" description="Release notes for Mimic public beta builds.">
   <section class="page-head container"><span class="eyebrow">Release history</span><h1>Changelog.</h1><p>What changed in each public beta build.</p></section>
-  <section class="container changelog-wrap"><article class="prose panel" set:html={rendered} /><aside><span>Current release</span><strong>v0.1.3</strong><a class="button button-primary" href="https://github.com/moreveal/mimic-overview/releases/latest">Download latest</a><a href="https://github.com/moreveal/mimic-overview/releases">All GitHub releases →</a></aside></section>
+  <section class="container changelog-wrap"><article class="prose panel" set:html={rendered} /><aside><span>Current release</span><strong>v0.1.3</strong><a class="button button-primary" href="https://github.com/moreveal/mimic/releases/latest">Download latest</a><a href="https://github.com/moreveal/mimic/releases">All GitHub releases →</a></aside></section>
 </BaseLayout>
 <style>
   .page-head { padding: 75px 0 52px; border-bottom: 1px solid var(--line); }.page-head h1 { margin: 12px 0 8px; font-size: clamp(3rem,7vw,5.8rem); line-height: 1; letter-spacing: -.06em; }.page-head p { margin: 0; color: var(--muted); font-size: 1.15rem; }

@@ -9,7 +9,7 @@ import DocsLayout from "@/layouts/DocsLayout.astro";
   <div class="callout"><strong>Mimic is not a JavaScript SDK.</strong> The primary interface is a local CDP endpoint. Use normal Playwright, Puppeteer, or raw CDP calls; the custom <code>Mimic.*</code> commands provide runtime-specific configuration and control.</div>
 
   <h2 id="getting-started">Getting started</h2>
-  <p>Download the latest Windows or Linux archive from <a href="https://github.com/moreveal/mimic-overview/releases/latest">GitHub Releases</a>, verify it against the included <code>SHA256SUMS</code>, and extract it. No Chrome, Go, Rust, display server, or GPU is required for the packaged executable.</p>
+  <p>Download the latest Windows or Linux archive from <a href="https://github.com/moreveal/mimic/releases/latest">GitHub Releases</a>, verify it against the included <code>SHA256SUMS</code>, and extract it. No Chrome, Go, Rust, display server, or GPU is required for the packaged executable.</p>
   <table><thead><tr><th>Platform</th><th>Runtime requirements</th></tr></thead><tbody><tr><td>Windows amd64</td><td>Verified on Windows 11. Run <code>mimic.exe</code>.</td></tr><tr><td>Linux amd64</td><td>glibc 2.39+, libgcc_s, and installed Liberation, DejaVu, or Noto fonts. Ubuntu 24.04+.</td></tr></tbody></table>
   <pre><code>{`# Windows
 .\\mimic.exe --listen 127.0.0.1:9222

@@ -5,7 +5,7 @@ const base = import.meta.env.BASE_URL;
 const path = Astro.url.pathname;
 const links = [
   { label: "Docs", href: `${base}docs/` },
-  { label: "GitHub", href: "https://github.com/moreveal/mimic-overview", external: true },
+  { label: "GitHub", href: "https://github.com/moreveal/mimic", external: true },
   { label: "Changelog", href: `${base}changelog/` },
 ];
 ---
@@ -17,7 +17,7 @@ const links = [
     </button>
     <nav id="site-nav" aria-label="Primary navigation">
       {links.map((link) => <a href={link.href} aria-current={!link.external && path === link.href ? "page" : undefined}>{link.label}</a>)}
-      <a class="download" href="https://github.com/moreveal/mimic-overview/releases/latest">
+      <a class="download" href="https://github.com/moreveal/mimic/releases/latest">
         <Download size={19} strokeWidth={2} />
         Download
       </a>
