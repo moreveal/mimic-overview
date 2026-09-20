@@ -16,7 +16,7 @@ const nav = [
       <nav id="docs-nav" aria-label="Documentation sections">
         {nav.map(([label,id]) => <a href={`#${id}`}>{label}</a>)}
       </nav>
-      <div class="aside-note"><strong>Public beta · v0.1.3</strong><span>Windows & Linux amd64</span></div>
+      <div class="aside-note"><strong>Public beta · v0.1.4</strong><span>Windows & Linux amd64</span></div>
     </aside>
     <article class="docs-content prose"><slot /></article>
     <div class="on-page"><span>On this page</span>{nav.slice(3,9).map(([label,id]) => <a href={`#${id}`}>{label}</a>)}</div>
