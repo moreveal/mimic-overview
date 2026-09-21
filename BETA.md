@@ -1,6 +1,6 @@
 # Public Beta
 
-**[Download Mimic for Windows or Linux →](https://github.com/moreveal/mimic/releases/tag/v0.1.4)**
+**[Download Mimic for Windows or Linux →](https://github.com/moreveal/mimic/releases/tag/v0.1.5)**
 
 The beta is publicly downloadable. No Discord invitation is required.
 Start with the [quick start](QUICKSTART.md) or the [runnable examples](examples/README.md).
