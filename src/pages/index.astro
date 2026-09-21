@@ -1,164 +1,857 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import CodeWindow from "@/components/CodeWindow.astro";
-import benchmarkStory from "../../assets/benchmark-story-20260921.png";
-import { Cpu, Download, FileText, Github, MonitorCog, RefreshCw, SquareTerminal } from "lucide-astro";
+import {
+  ArrowRight,
+  ChartNoAxesColumnIncreasing,
+  CircleDot,
+  CircleX,
+  Cpu,
+  Download,
+  Github,
+  ImageOff,
+  Layers3,
+  Settings2,
+  TrendingUp,
+  Zap,
+} from "lucide-astro";
 
 const base = import.meta.env.BASE_URL;
-const launchCode = `// Start Mimic separately:
-// ./mimic --listen 127.0.0.1:9222 --chrome 152
-
-import { chromium } from "playwright-core";
-
+const playwrightCode = `import { chromium } from "playwright-core";
 const browser = await chromium.connectOverCDP(
   "http://127.0.0.1:9222"
 );
-const context = browser.contexts()[0];
-const page = await context.newPage();
-await page.goto("https://example.com/");`;
-
-const profileCode = `{
-  "schemaVersion": 1,
-  "baseProfile": "chrome-152-windows-x64-headful-controlled-v1",
-  "hardware": { "logicalProcessors": 8, "deviceMemoryGB": 8 },
-  "locale": {
-    "languages": ["en-US", "en"],
-    "timezone": "America/New_York",
-    "intlLocale": "en-US"
-  },
-  "preferences": { "colorScheme": "dark" }
+try {
+  const context = browser.contexts()[0];
+  const page = await context.newPage();
+  await page.goto("https://example.com/");
+  console.log(await page.locator("h1").innerText());
+} finally {
+  await browser.close();
 }`;
+const puppeteerCode = `import puppeteer from "puppeteer-core";
+const browser = await puppeteer.connect({
+  browserURL: "http://127.0.0.1:9222",
+  defaultViewport: null
+});
+try {
+  const page = await browser.newPage();
+  await page.goto("https://example.com/");
+  console.log(await page.$eval("h1", el => el.textContent));
+} finally {
+  await browser.disconnect();
+}`;
+const startCode = `# Windows
+.\\mimic.exe -listen 127.0.0.1:9222
+
+# Linux
+./mimic -listen 127.0.0.1:9222`;
 ---
-<BaseLayout title="Mimic — A Browserless Web Runtime for Automation" description="Run website JavaScript and automate Chrome-visible browser state without embedding Chromium or rendering pixels.">
+
+<BaseLayout
+  title="Mimic — Browser execution, without the browser"
+  description="Run website JavaScript and automate Chrome-visible state through CDP without embedding Chromium."
+>
   <section class="hero container">
     <div class="hero-copy">
-      <span class="beta"><i></i> Public beta · v0.1.5</span>
-      <h1>Run the web.<br /><em>Skip the rendering.</em></h1>
-      <p>The website’s own JavaScript. Browser state. No Chromium.<br />Built for automation.</p>
+      <span class="status"
+        ><span class="status-mark">✦</span> Public beta · Chrome 152 reference</span
+      >
+      <h1>Browser execution,<br />without the browser.</h1>
+      <p>
+        Mimic runs website JavaScript and exposes Chrome-visible state through
+        CDP, without embedding Chromium.
+      </p>
       <div class="hero-actions">
-        <a class="button button-primary" href="https://github.com/moreveal/mimic/releases/latest">
-          <Download class="icon" size={21} strokeWidth={2} />Download
-        </a>
-        <a class="button" href="https://github.com/moreveal/mimic">
-          <Github class="icon" size={21} strokeWidth={2} />View on GitHub
-        </a>
+        <a
+          class="button button-primary"
+          href="https://github.com/moreveal/mimic/releases/latest"
+          ><Download size={17} strokeWidth={1.8} />Download Mimic</a
+        >
+        <a class="button" href={`${base}docs/`}
+          >Read the docs <ArrowRight size={16} strokeWidth={1.8} /></a
+        >
+      </div>
+      <div class="hero-foot">
+        <a href="https://github.com/moreveal/mimic"
+          ><Github size={18} />Go to GitHub</a
+        ><span></span><p>Lightweight. Observable. Source available.</p>
       </div>
     </div>
-    <div class="hero-code"><CodeWindow code={launchCode} /></div>
-  </section>
-
-  <section class="quick container" aria-labelledby="quick-title">
-    <div class="quick-install">
-      <h2 id="quick-title">Quickstart</h2>
-      <p>Get up and running locally in a few minutes.</p>
-      <div class="command"><code>mimic --listen 127.0.0.1:9222</code><button type="button" data-simple-copy="mimic --listen 127.0.0.1:9222" aria-label="Copy launch command">Copy</button></div>
-      <div class="platforms">
-        <a href="https://github.com/moreveal/mimic/releases/latest"><MonitorCog class="platform-mark" size={28} strokeWidth={1.8} /><span><strong>Windows</strong><small>amd64 · Windows 11 verified</small></span></a>
-        <a href="https://github.com/moreveal/mimic/releases/latest"><SquareTerminal class="platform-mark" size={28} strokeWidth={1.8} /><span><strong>Linux</strong><small>amd64 · glibc 2.39+</small></span></a>
-      </div>
-      <a class="text-link" href={`${base}docs/#getting-started`}>Read the complete setup guide <span>→</span></a>
-    </div>
-    <div class="feature-grid">
-      <article><span class="feature-icon"><FileText size={31} strokeWidth={1.75} /></span><h3>Chrome 152 reference</h3><p>Implements observable Chrome behavior, aligned with Chrome 152.</p></article>
-      <article><span class="feature-icon"><RefreshCw size={32} strokeWidth={1.75} /></span><h3>One event loop per Page</h3><p>Each Page runs in a single event loop, matching browser semantics.</p></article>
-      <article><span class="feature-icon"><Cpu size={32} strokeWidth={1.75} /></span><h3>No GPU required</h3><p>Runs on CPU. No GPU or system browser installation needed.</p></article>
-    </div>
-  </section>
-
-  <section class="section" id="workflows">
-    <div class="container">
-      <div class="section-heading"><span class="eyebrow">Working browser behavior</span><h2>Use the tools you already know.</h2><p>Connect stock Playwright or Puppeteer clients over CDP. Mimic owns the runtime; your automation keeps its familiar interface.</p></div>
-      <div class="workflow-layout">
-        <div class="workflow-list">
-          <article><span>01</span><div><h3>Navigate and inspect</h3><p>Load HTTP pages, evaluate JavaScript, query the DOM, and observe lifecycle and network events.</p></div></article>
-          <article><span>02</span><div><h3>Interact with application state</h3><p>Use locators, fill form controls, click actions, work across frames and Shadow DOM, and observe popup pages.</p></div></article>
-          <article><span>03</span><div><h3>Run concurrent Pages</h3><p>Each Page owns its runtime and event loop. BrowserContexts isolate profiles, cookies, and connection pools.</p></div></article>
+    <div
+      class="hero-snippets"
+      aria-label="Run Mimic and connect your automation"
+    >
+      <div class="connect-snippet">
+        <div class="snippet-tabs" role="tablist" aria-label="Automation client">
+          <button
+            class="active"
+            type="button"
+            role="tab"
+            id="tab-playwright"
+            aria-controls="panel-playwright"
+            aria-selected="true"
+            data-tab="playwright">Playwright</button
+          >
+          <button
+            type="button"
+            role="tab"
+            id="tab-puppeteer"
+            aria-controls="panel-puppeteer"
+            aria-selected="false"
+            data-tab="puppeteer">Puppeteer</button
+          >
         </div>
-        <div class="checkpoint panel"><div class="checkpoint-head"><span>Verified checkpoint</span><strong>38/38 checks</strong></div><div class="checkpoint-body"><div class="bar"><i style="width:100%"></i></div><p>Two project regression suites cover navigation, locators, forms, fetch/XHR, frames, Shadow DOM, popups, redirects, cookies, history, multi-page state, and network observation.</p><small>Mimic’s own compatibility checks, not the official Playwright test suite.</small></div></div>
+        <div
+          id="panel-playwright"
+          role="tabpanel"
+          aria-labelledby="tab-playwright"
+        >
+          <CodeWindow title="playwright.mjs" code={playwrightCode} />
+        </div>
+        <div
+          id="panel-puppeteer"
+          role="tabpanel"
+          aria-labelledby="tab-puppeteer"
+          hidden
+        >
+          <CodeWindow title="puppeteer.mjs" code={puppeteerCode} />
+        </div>
+      </div>
+      <div class="run-snippet">
+        <div class="run-heading">
+          <span>Start Mimic</span><span class="run-indicator"
+            ><i></i> Local endpoint</span
+          >
+        </div>
+        <div class="run-caption">
+          Download the executable for your system. Run one command, then connect
+          your client.
+        </div>
+        <CodeWindow title="terminal" code={startCode} lang="bash" />
+        <div class="run-bottom">
+          <span>Windows & Linux amd64</span><a
+            href={`${base}docs/#getting-started`}
+            >Setup guide <ArrowRight size={15} /></a
+          >
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="section benchmarks" id="benchmarks">
-    <div class="container">
-      <div class="section-heading"><span class="eyebrow">Measured, not assumed</span><h2>A lighter runtime for supported workloads.</h2><p>Fresh v0.1.5 build measured September 21, 2026 against Chrome 152.0.7977.82 in controlled local fixtures.</p></div>
-      <div class="metrics">
-        <article><strong>2.5×</strong><span>less CDP-ready RSS</span><small>147.71 MiB vs 374.99 MiB</small></article>
-        <article><strong>3.0×</strong><span>less active RSS at 50 Pages</span><small>1,360.69 MiB vs 4,117.22 MiB</small></article>
-        <article><strong>4.1×</strong><span>throughput at 50 Pages</span><small>87.01 vs 21.37 sessions/s</small></article>
+  <section class="steps container" aria-labelledby="steps-title">
+    <div class="section-label">
+      <h2 id="steps-title">Start in three steps</h2><span></span>
+    </div>
+    <ol>
+      <li>
+        <span class="step-number">1</span><div>
+          <strong>Download binary</strong><p>
+            Get the latest release for your platform from GitHub.
+          </p>
+        </div><ArrowRight class="step-arrow" size={18} />
+      </li>
+      <li>
+        <span class="step-number">2</span><div>
+          <strong>Start local endpoint</strong><p>
+            Run Mimic and start the CDP endpoint.
+          </p>
+        </div><ArrowRight class="step-arrow" size={18} />
+      </li>
+      <li>
+        <span class="step-number">3</span><div>
+          <strong>Connect Playwright or Puppeteer</strong><p>
+            Use your existing automation code.
+          </p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section
+    class="metrics container"
+    id="benchmarks"
+    aria-label="Measured performance"
+  >
+    <div class="metric">
+      <span class="metric-icon"><Cpu size={24} strokeWidth={1.8} /></span><div>
+        <strong>2.5×</strong><span>less CDP-ready RSS</span><small
+          >147.71 MiB vs 374.99 MiB</small
+        >
       </div>
-      <a class="benchmark-story panel" href="https://github.com/moreveal/mimic/blob/main/benchmark/runs/12-release-20260921/public-summary.md"><img src={benchmarkStory.src} alt="Mimic v0.1.5 benchmark: 2.5 times less ready RSS, 4.1 times static throughput, and 3 times less active RSS than Chrome at 50 Pages" loading="lazy" /></a>
-      <p class="benchmark-note">All correctness gates and measured attempts passed. These results describe specific fixtures and this machine, not arbitrary websites or production cost. The full matrix includes workloads where Chrome is faster. <a href="https://github.com/moreveal/mimic/blob/main/benchmark/runs/12-release-20260921/public-summary.md">Read the methodology →</a></p>
     </div>
+    <div class="metric">
+      <span class="metric-icon"
+        ><ChartNoAxesColumnIncreasing size={24} strokeWidth={1.9} /></span
+      ><div>
+        <strong>3.0×</strong><span>less active RSS at 50 Pages</span><small
+          >1,360.69 MiB vs 4,117.22 MiB</small
+        >
+      </div>
+    </div>
+    <div class="metric">
+      <span class="metric-icon"
+        ><Zap size={26} strokeWidth={1.8} fill="currentColor" /></span
+      ><div>
+        <strong>4.1×</strong><span>throughput at 50 Pages</span><small
+          >87.01 vs 21.37 sessions/s</small
+        >
+      </div>
+    </div>
+    <p class="metric-note">
+      Controlled fixtures, September 2026 · <a
+        href="https://github.com/moreveal/mimic/blob/main/benchmark/runs/12-release-20260921/public-summary.md"
+        >Read methodology <ArrowRight size={14} /></a
+      >
+    </p>
   </section>
 
-  <section class="section configure">
-    <div class="container configure-grid">
-      <div><span class="eyebrow">Configure once</span><h2>Describe the environment. Then automate.</h2><p>A versioned profile controls browser-visible screen, locale, hardware, preferences, networking, and supported capabilities before the first page loads.</p><ul><li>Validated JSON Schema</li><li>Independent profiles per BrowserContext</li><li>Native SOCKS5, HTTP, and HTTPS proxies</li></ul><a class="text-link" href={`${base}docs/#profiles`}>Explore profile schema v1 <span>→</span></a></div>
-      <CodeWindow title="profile.json" code={profileCode} lang="json" />
+  <section class="details container" id="product">
+    <div class="detail-column">
+      <span class="kicker">Product</span>
+      <h2>Built around observable behavior</h2>
+      <p>
+        Mimic executes website JavaScript and exposes Chrome-visible state
+        through CDP. It focuses on the parts that matter for automation without
+        embedding Chromium.
+      </p>
+      <div class="detail-list">
+        <div>
+          <span><CircleX size={20} strokeWidth={1.4} /></span><div>
+            <strong>Compatible with existing tooling</strong><p>
+              Use Playwright, Puppeteer, or another CDP client.
+            </p>
+          </div>
+        </div>
+        <div>
+          <span><TrendingUp size={20} strokeWidth={1.4} /></span><div>
+            <strong>Independent Pages</strong><p>
+              Run multiple Pages, each with its own event loop.
+            </p>
+          </div>
+        </div>
+        <div>
+          <span><CircleDot size={20} strokeWidth={1.4} /></span><div>
+            <strong>One executable</strong><p>
+              The release needs no Chrome, Go, or Rust installation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="detail-column">
+      <span class="kicker">Compatibility</span>
+      <h2>Know the boundaries</h2>
+      <p>
+        Mimic is a public beta. Check that the browser features your project
+        uses are supported. Use a full browser when visual output matters.
+      </p>
+      <div class="boundary-panel">
+        <div>
+          <ImageOff size={22} strokeWidth={1.5} /><span
+            ><strong>No screenshots or rendered pixels</strong><p>
+              Mimic does not produce visual output.
+            </p></span
+          >
+        </div>
+        <div>
+          <Settings2 size={22} strokeWidth={1.5} /><span
+            ><strong>Some browser features are not supported</strong><p>
+              Compatibility depends on your workflow.
+            </p></span
+          >
+        </div>
+        <div>
+          <Layers3 size={22} strokeWidth={1.5} /><span
+            ><strong>Trusted local clients only</strong><p>
+              The CDP endpoint has no authentication.
+            </p></span
+          >
+        </div>
+        <a href={`${base}docs/#compatibility`}
+          >Read the documentation <ArrowRight size={16} /></a
+        >
+      </div>
     </div>
   </section>
-
-  <section class="section limitations">
-    <div class="container limitation-grid">
-      <div><span class="eyebrow">Explicit boundaries</span><h2>Know when to use a full browser.</h2></div>
-      <div><p>Mimic is a public beta and implements a subset of browser APIs and CDP. It is designed for supported execution workflows—not visual output or universal Chrome compatibility.</p><div class="boundary-list"><span>No screenshots or rendered PDFs</span><span>No complete CSS layout</span><span>No Canvas/WebGL pixels or video</span><span>Not a sandbox for hostile code</span><span>Windows & Linux amd64 only</span><span>Trusted local CDP clients only</span></div><a class="text-link" href={`${base}docs/#compatibility`}>Review compatibility boundaries <span>→</span></a></div>
-    </div>
-  </section>
-
-  <section class="final-cta container">
-    <div><span class="eyebrow">Public beta</span><h2>Let the website do the work.</h2><p>Download Mimic, start the local runtime, and connect your automation.</p></div>
-    <a class="button button-primary" href="https://github.com/moreveal/mimic/releases/latest">Download v0.1.5 <span>↓</span></a>
+  <section class="closing container">
+    <div>
+      <span class="kicker">Get started</span><h2>
+        Try Mimic with your own scripts.
+      </h2><p>
+        Download a release, connect your client, and check the behavior your
+        project needs.
+      </p>
+    </div><a
+      class="button button-primary"
+      href="https://github.com/moreveal/mimic/releases/latest"
+      ><Download size={18} />Download Mimic</a
+    >
   </section>
 </BaseLayout>
-
 <script>
-  document.querySelectorAll<HTMLButtonElement>("[data-simple-copy]").forEach((button) => button.addEventListener("click", async () => {
-    await navigator.clipboard.writeText(button.dataset.simpleCopy || "");
-    const old = button.textContent; button.textContent = "Copied"; setTimeout(() => button.textContent = old, 1400);
-  }));
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>("[data-tab]")];
+  tabs.forEach((tab) =>
+    tab.addEventListener("click", () => {
+      tabs.forEach((item) => {
+        const selected = item === tab;
+        item.classList.toggle("active", selected);
+        item.setAttribute("aria-selected", String(selected));
+        document
+          .getElementById(`panel-${item.dataset.tab}`)
+          ?.toggleAttribute("hidden", !selected);
+      });
+    }),
+  );
 </script>
-
 <style>
-  .hero { min-height: 590px; display: grid; grid-template-columns: 1.08fr .92fr; align-items: center; gap: 76px; padding-top: 52px; padding-bottom: 84px; }
-  .hero-copy,.hero-code,.quick-install,.feature-grid,.configure-grid > * { min-width: 0; }
-  .beta { display: inline-flex; align-items: center; gap: 9px; color: #9ca8b7; font-size: .8rem; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; }
-  .beta i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px rgba(66,216,120,.7); }
-  h1 { margin: 22px 0 20px; font-size: clamp(3.1rem, 4.65vw, 4.65rem); font-weight: 760; line-height: .98; letter-spacing: -.06em; }
-  h1 em { color: var(--blue); font-style: normal; }
-  .hero-copy > p { margin: 0; color: #aeb9ca; font-size: clamp(1.05rem, 1.6vw, 1.3rem); line-height: 1.45; }
-  .hero-actions { display: flex; flex-wrap: wrap; gap: 13px; margin-top: 30px; }
-  .quick { display: grid; grid-template-columns: .85fr 1.45fr; gap: 70px; padding: 62px 0 80px; border-top: 1px solid var(--line); }
-  .quick h2 { margin: 0 0 3px; font-size: 2rem; font-weight: 740; letter-spacing: -.035em; }
-  .quick p { margin: 0 0 20px; color: var(--muted); }
-  .command { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 54px; padding: 0 10px 0 17px; border: 1px solid var(--line-bright); border-radius: 7px; background: #0a0d10; }
-  .command code { color: #e7ebf0; font-size: .88rem; overflow: hidden; text-overflow: ellipsis; }
-  .command button { padding: 7px 9px; border: 0; border-radius: 5px; background: #171c21; color: var(--muted); cursor: pointer; font-size: .75rem; }
-  .platforms { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0 14px; }
-  .platforms a { display: flex; align-items: center; gap: 13px; min-height: 67px; padding: 10px 15px; border: 1px solid var(--line); border-radius: 7px; background: #080b0d; }
-  .platforms a:hover { border-color: var(--line-bright); }
-  .platform-mark { width: 29px; color: #fff; line-height: 1; }
-  .platforms strong, .platforms small { display: block; }.platforms small { color: var(--quiet); font-size: .7rem; }
-  .text-link { color: var(--blue-bright); font-size: .9rem; font-weight: 650; }.text-link span { display: inline-block; transition: transform .15s; }.text-link:hover span { transform: translateX(4px); }
-  .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); align-self: start; padding-top: 20px; }
-  .feature-grid article { min-height: 220px; padding: 0 38px 20px; border-left: 1px solid var(--line); }
-  .feature-icon { display: inline-grid; place-items: center; width: 64px; height: 64px; margin-bottom: 17px; border: 1px solid var(--line); border-radius: 8px; background: #0b0f12; color: var(--blue); box-shadow: inset 0 0 18px rgba(44,145,255,.05); }
-  .feature-grid h3 { margin: 0 0 8px; font-size: 1.03rem; font-weight: 680; letter-spacing: -.02em; line-height: 1.3; }.feature-grid p { margin: 0; color: #aeb9c8; font-size: .95rem; line-height: 1.48; }
-  .workflow-layout { display: grid; grid-template-columns: 1.2fr .8fr; gap: 70px; align-items: center; }
-  .workflow-list article { display: grid; grid-template-columns: 42px 1fr; gap: 18px; padding: 24px 0; border-top: 1px solid var(--line); }.workflow-list article:last-child { border-bottom: 1px solid var(--line); }
-  .workflow-list article > span { color: var(--blue); font-family: var(--mono); font-size: .8rem; }.workflow-list h3 { margin: 0 0 5px; }.workflow-list p { margin: 0; color: var(--muted); }
-  .checkpoint-head { display: flex; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); color: var(--muted); }.checkpoint-head strong { color: var(--green); }
-  .checkpoint-body { padding: 22px; }.checkpoint-body p { color: #c0c9d4; }.checkpoint-body small { display: block; color: var(--quiet); }
-  .bar { height: 4px; border-radius: 9px; background: #1a2229; }.bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,var(--blue-deep),var(--green)); }
-  .benchmarks { background: radial-gradient(circle at 50% 30%,rgba(32,107,185,.07),transparent 45%); }
-  .metrics { display: grid; grid-template-columns: repeat(3,1fr); margin-bottom: 34px; border-block: 1px solid var(--line); }.metrics article { padding: 32px; border-left: 1px solid var(--line); }.metrics article:first-child { border-left: 0; }.metrics strong,.metrics span,.metrics small { display: block; }.metrics strong { color: var(--blue-bright); font-size: clamp(2.6rem,5vw,4.5rem); line-height: 1; letter-spacing: -.06em; }.metrics span { margin: 10px 0 2px; color: #e5e9ee; font-weight: 700; }.metrics small { color: var(--quiet); }
-  .benchmark-story { display: block; overflow: hidden; }.benchmark-story img { display: block; width: 100%; background: #070909; }
-  .benchmark-note { max-width: 800px; margin: 24px auto 0; color: var(--quiet); text-align: center; font-size: .86rem; }.benchmark-note a { color: var(--blue-bright); }
-  .configure-grid { display: grid; grid-template-columns: .8fr 1.2fr; align-items: center; gap: 80px; }.configure h2,.limitations h2,.final-cta h2 { margin: 12px 0 15px; font-size: clamp(2.2rem,4vw,3.6rem); line-height: 1.05; letter-spacing: -.045em; }.configure p,.limitations p,.final-cta p { color: var(--muted); }.configure ul { padding: 0; margin: 24px 0; list-style: none; }.configure li { padding: 8px 0 8px 25px; position: relative; }.configure li::before { content: "✓"; position: absolute; left: 0; color: var(--blue); }
-  .limitation-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 80px; }.limitation-grid > div:last-child { padding-top: 18px; }.boundary-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 25px 0; }.boundary-list span { padding: 12px 14px; border-left: 2px solid #38424d; background: #090c0e; color: #b4becb; font-size: .87rem; }
-  .final-cta { display: flex; align-items: center; justify-content: space-between; gap: 50px; padding-block: 88px; }.final-cta h2 { margin-bottom: 8px; }.final-cta p { margin: 0; }.final-cta .button { flex: none; }
-  @media (min-width: 981px) { .hero h1 em { white-space: nowrap; } }
-  @media (max-width: 980px) { .hero { grid-template-columns: 1fr; gap: 45px; }.quick,.workflow-layout,.configure-grid,.limitation-grid { grid-template-columns: 1fr; gap: 45px; } }
-  @media (max-width: 720px) { .hero { min-height: auto; padding-top: 45px; }.hero h1 { font-size: clamp(2.45rem,11.2vw,3rem); letter-spacing: -.055em; }.hero-copy > p br { display: none; }.quick { padding-top: 52px; }.feature-grid,.metrics { grid-template-columns: 1fr; }.feature-grid { padding-top: 0; }.feature-grid article,.feature-grid article:first-child { min-height: 0; padding: 25px 0; border-left: 0; border-top: 1px solid var(--line); }.metrics article,.metrics article:first-child { padding: 25px 5px; border-left: 0; border-top: 1px solid var(--line); }.metrics article:first-child { border-top: 0; }.boundary-list { grid-template-columns: 1fr; }.final-cta { align-items: flex-start; flex-direction: column; }.final-cta .button { width: 100%; } }
-  @media (max-width: 470px) { .platforms { grid-template-columns: 1fr; }.hero-actions .button { width: 100%; } }
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.12fr);
+    align-items: start;
+    gap: 34px;
+    padding-top: 38px;
+    padding-bottom: 51px;
+  }
+  .hero-copy {
+    min-width: 0;
+    padding-top: 0;
+  }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 10px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: #1b252a;
+    color: var(--blue-bright);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .status-mark {
+    display: grid;
+    place-items: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    background: var(--blue);
+    color: #10202d;
+    font-size: 0.65rem;
+  }
+  h1 {
+    margin: 24px 0 18px;
+    font-family: var(--display);
+    font-size: clamp(2.48rem, 3.7vw, 3.45rem);
+    font-weight: 760;
+    line-height: 1.17;
+    letter-spacing: -0.048em;
+  }
+  .hero-copy > p {
+    max-width: 430px;
+    margin: 0;
+    color: #c4cdd5;
+    font-size: 1.06rem;
+    line-height: 1.62;
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 29px;
+  }
+  .hero-foot {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-top: 27px;
+    color: var(--quiet);
+    font-size: 0.78rem;
+  }
+  .hero-foot a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #b6c0ca;
+    white-space: nowrap;
+  }
+  .hero-foot a:hover {
+    color: var(--blue-bright);
+  }
+  .hero-foot > span {
+    width: 1px;
+    height: 15px;
+    background: var(--line-bright);
+  }
+  .hero-foot p {
+    margin: 0;
+    white-space: nowrap;
+  }
+  .hero-snippets {
+    display: grid;
+    grid-template-columns: 1.15fr 0.92fr;
+    gap: 10px;
+    min-width: 0;
+  }
+  .connect-snippet,
+  .run-snippet {
+    min-width: 0;
+    height: 347px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: linear-gradient(135deg, #1b2327, #151d20);
+    overflow: hidden;
+  }
+  .snippet-tabs {
+    display: flex;
+    gap: 6px;
+    height: 39px;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .snippet-tabs button {
+    padding: 0 4px;
+    margin-right: 10px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--muted);
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+  .snippet-tabs button.active {
+    border-bottom-color: var(--blue);
+    color: var(--text);
+  }
+  .connect-snippet :global(.code-window),
+  .run-snippet :global(.code-window) {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+  .connect-snippet :global(.code-titlebar) {
+    height: 30px;
+    border: 0;
+    padding-inline: 13px;
+  }
+  .connect-snippet :global(.highlighted pre) {
+    height: 277px;
+    overflow: auto;
+    padding: 10px 13px;
+    font-size: 0.71rem;
+    line-height: 1.73;
+  }
+  .run-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 39px;
+    gap: 4px;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.78rem;
+  }
+  .run-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--blue-bright);
+    font-size: 0.68rem;
+    white-space: nowrap;
+  }
+  .run-indicator i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--blue-bright);
+  }
+  .run-caption {
+    padding: 15px 13px 10px;
+    color: var(--muted);
+    font-size: 0.79rem;
+    line-height: 1.5;
+  }
+  .run-snippet :global(.code-titlebar) {
+    height: 28px;
+    border: 0;
+    padding-inline: 13px;
+  }
+  .run-snippet :global(.highlighted pre) {
+    overflow: auto;
+    padding: 8px 13px;
+    font-size: 0.69rem;
+    line-height: 1.65;
+  }
+  .run-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 13px 0;
+    border-top: 1px solid var(--line);
+    color: var(--quiet);
+    font-size: 0.72rem;
+  }
+  .run-bottom a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--blue-bright);
+  }
+  [hidden] {
+    display: none !important;
+  }
+  .steps {
+    padding-bottom: 35px;
+  }
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .section-label h2 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  .section-label span {
+    flex: 1;
+    border-top: 1px solid var(--line);
+  }
+  .steps ol {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 23px;
+    margin: 0;
+    padding: 18px 0 0;
+    list-style: none;
+  }
+  .steps li {
+    display: flex;
+    align-items: start;
+    gap: 14px;
+    min-width: 0;
+  }
+  .step-number {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 29px;
+    height: 29px;
+    border: 1px solid var(--blue);
+    border-radius: 50%;
+    font-size: 0.84rem;
+  }
+  .steps li > div {
+    min-width: 0;
+  }
+  .step-arrow {
+    flex: none;
+    margin: 14px 0 0 auto;
+    color: var(--quiet);
+  }
+  .steps strong {
+    font-size: 0.88rem;
+    font-weight: 650;
+  }
+  .steps p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.79rem;
+    line-height: 1.5;
+  }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    padding-bottom: 62px;
+  }
+  .metric {
+    display: flex;
+    align-items: start;
+    gap: 17px;
+    min-width: 0;
+    min-height: 132px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: linear-gradient(140deg, #1b2428, #171e21);
+  }
+  .metric-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 51px;
+    height: 51px;
+    border-radius: 50%;
+    background: #213345;
+    color: var(--blue);
+  }
+  .metric strong,
+  .metric span:not(.metric-icon),
+  .metric small {
+    display: block;
+  }
+  .metric strong {
+    font-family: var(--display);
+    font-size: 2.2rem;
+    font-weight: 760;
+    line-height: 1;
+    letter-spacing: -0.055em;
+  }
+  .metric span:not(.metric-icon) {
+    margin-top: 7px;
+    font-size: 0.89rem;
+    font-weight: 650;
+  }
+  .metric small {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.74rem;
+    line-height: 1.4;
+  }
+  .metric-note {
+    grid-column: 1/-1;
+    margin: -6px 0 0;
+    text-align: center;
+    color: var(--quiet);
+    font-size: 0.76rem;
+  }
+  .metric-note a {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: var(--blue-bright);
+  }
+  .details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 38px;
+    padding-bottom: 66px;
+  }
+  .detail-column + .detail-column {
+    padding-left: 35px;
+    border-left: 1px solid #26353b;
+  }
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #b0d3f5;
+    font-size: 0.8rem;
+  }
+  .kicker:before {
+    content: "";
+    width: 16px;
+    height: 2px;
+    background: var(--blue);
+  }
+  .details h2,
+  .closing h2 {
+    margin: 10px 0 11px;
+    font-family: var(--display);
+    font-size: clamp(1.55rem, 2.2vw, 2.1rem);
+    font-weight: 730;
+    line-height: 1.25;
+    letter-spacing: -0.04em;
+  }
+  .details p,
+  .closing p {
+    max-width: 480px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.91rem;
+    line-height: 1.62;
+  }
+  .detail-list {
+    display: grid;
+    gap: 17px;
+    margin-top: 25px;
+  }
+  .detail-list > div {
+    display: flex;
+    gap: 15px;
+  }
+  .detail-list > div > span {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--blue);
+    border-radius: 50%;
+    color: var(--text);
+  }
+  .detail-list strong,
+  .boundary-panel strong {
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+  .detail-list p,
+  .boundary-panel p {
+    margin: 3px 0 0;
+    color: var(--muted);
+    font-size: 0.76rem;
+    line-height: 1.45;
+  }
+  .boundary-panel {
+    margin-top: 20px;
+    padding: 5px 19px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #1b2529;
+  }
+  .boundary-panel > div {
+    display: flex;
+    align-items: start;
+    gap: 17px;
+    padding: 12px 0;
+    border-bottom: 1px solid #334147;
+  }
+  .boundary-panel > div > svg {
+    flex: none;
+    color: var(--text);
+  }
+  .boundary-panel > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 14px 0;
+    color: var(--blue-bright);
+    font-size: 0.8rem;
+  }
+  .closing {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    padding-top: 40px;
+    padding-bottom: 64px;
+    border-top: 1px solid var(--line);
+  }
+  .closing .button {
+    flex: none;
+  }
+  @media (max-width: 1100px) {
+    .hero {
+      gap: 20px;
+    }
+    .hero-snippets {
+      gap: 8px;
+    }
+    .hero-foot p {
+      white-space: normal;
+    }
+    .metric {
+      padding: 17px;
+      gap: 12px;
+    }
+  }
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+    .hero-snippets {
+      max-width: 700px;
+    }
+    .hero-copy > p {
+      max-width: 680px;
+    }
+    .details {
+      gap: 25px;
+    }
+  }
+  @media (max-width: 760px) {
+    .hero {
+      padding-top: 19px;
+      padding-bottom: 38px;
+      gap: 28px;
+    }
+    h1 {
+      margin: 13px 0 10px;
+      font-size: clamp(2rem, 8.6vw, 2.7rem);
+      line-height: 1.13;
+    }
+    .hero-copy > p {
+      font-size: 0.94rem;
+    }
+    .hero-actions {
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 19px;
+    }
+    .hero-actions .button {
+      width: 100%;
+    }
+    .hero-foot {
+      margin-top: 13px;
+    }
+    .hero-snippets {
+      grid-template-columns: 1fr;
+      gap: 9px;
+    }
+    .connect-snippet {
+      height: 230px;
+    }
+    .connect-snippet :global(.highlighted pre) {
+      height: 165px;
+    }
+    .run-snippet {
+      height: auto;
+    }
+    .run-caption {
+      padding: 12px;
+    }
+    .run-bottom {
+      padding: 10px 13px 13px;
+    }
+    .steps ol {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .step-arrow {
+      display: none;
+    }
+    .metrics {
+      grid-template-columns: 1fr;
+      gap: 9px;
+      padding-bottom: 42px;
+    }
+    .metric {
+      min-height: 0;
+      padding: 14px;
+    }
+    .metric-note {
+      margin-top: 7px;
+    }
+    .details {
+      grid-template-columns: 1fr;
+      gap: 41px;
+      padding-bottom: 55px;
+    }
+    .detail-column + .detail-column {
+      padding: 0;
+      border: 0;
+    }
+    .closing {
+      align-items: start;
+      flex-direction: column;
+    }
+    .closing .button {
+      width: 100%;
+    }
+  }
+  @media (max-width: 390px) {
+    .hero-foot {
+      flex-wrap: wrap;
+    }
+    .hero-foot > span {
+      display: none;
+    }
+    .status {
+      font-size: 0.69rem;
+    }
+  }
 </style>

@@ -1,42 +1,345 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
-interface Props { title: string; description: string; }
+import {
+  ArrowRight,
+  BookOpen,
+  Code2,
+  Settings2,
+  ShieldCheck,
+} from "lucide-astro";
+
+interface Props {
+  title: string;
+  description: string;
+}
 const { title, description } = Astro.props;
-const nav = [
-  ["Getting started", "getting-started"], ["Playwright", "playwright"], ["Puppeteer", "puppeteer"],
-  ["CLI reference", "cli"], ["Environment profiles", "profiles"], ["Profile fields", "profile-fields"],
-  ["Mimic.* commands", "mimic-commands"], ["Proxies", "proxies"], ["Multiple contexts", "contexts"],
-  ["Compatibility", "compatibility"], ["Troubleshooting", "troubleshooting"], ["FAQ", "faq"]
+const groups = [
+  {
+    title: "Get running",
+    description: "Install Mimic and connect your code.",
+    href: "#getting-started",
+    icon: BookOpen,
+  },
+  {
+    title: "Use your tools",
+    description: "Examples for Playwright and Puppeteer.",
+    href: "#playwright",
+    icon: Code2,
+  },
+  {
+    title: "Set up profiles",
+    description: "Choose the environment your pages see.",
+    href: "#profiles",
+    icon: Settings2,
+  },
+  {
+    title: "Check support",
+    description: "Understand what works and what is missing.",
+    href: "#compatibility",
+    icon: ShieldCheck,
+  },
+];
+const topics = [
+  ["Getting started", "getting-started"],
+  ["Playwright", "playwright"],
+  ["Puppeteer", "puppeteer"],
+  ["CLI reference", "cli"],
+  ["Environment profiles", "profiles"],
+  ["Profile fields", "profile-fields"],
+  ["Mimic commands", "mimic-commands"],
+  ["Proxies", "proxies"],
+  ["Multiple contexts", "contexts"],
+  ["Compatibility", "compatibility"],
+  ["Troubleshooting", "troubleshooting"],
+  ["FAQ", "faq"],
 ];
 ---
+
 <BaseLayout title={`${title} — Mimic Docs`} description={description}>
+  <div class="docs-intro container">
+    <div class="docs-intro-copy">
+      <span class="eyebrow">Documentation</span>
+      <h1>Build with Mimic.</h1>
+      <p>
+        Get Mimic running, connect your existing tools, and find the details you
+        need as you build.
+      </p>
+    </div>
+    <div class="docs-intro-note">
+      <span>Current release</span><strong>v0.1.5</strong><small
+        >Windows & Linux amd64</small
+      >
+    </div>
+  </div>
+  <nav class="docs-cards container" aria-label="Start with a topic">
+    {
+      groups.map((group) => (
+        <a href={group.href}>
+          <>
+            <span class="card-icon">
+              <group.icon size={22} />
+            </span>
+            <strong>{group.title}</strong>
+            <p>{group.description}</p>
+            <ArrowRight size={17} class="card-arrow" />
+          </>
+        </a>
+      ))
+    }
+  </nav>
   <div class="docs-shell container">
-    <aside>
-      <div class="aside-heading"><span>Documentation</span><button type="button" aria-expanded="false" aria-controls="docs-nav">Browse sections <i>⌄</i></button></div>
-      <nav id="docs-nav" aria-label="Documentation sections">
-        {nav.map(([label,id]) => <a href={`#${id}`}>{label}</a>)}
-      </nav>
-      <div class="aside-note"><strong>Public beta · v0.1.5</strong><span>Windows & Linux amd64</span></div>
-    </aside>
     <article class="docs-content prose"><slot /></article>
-    <div class="on-page"><span>On this page</span>{nav.slice(3,9).map(([label,id]) => <a href={`#${id}`}>{label}</a>)}</div>
+    <aside class="docs-index">
+      <span>On this page</span>
+      <nav aria-label="Documentation sections">
+        {topics.map(([label, id]) => <a href={`#${id}`}>{label}</a>)}
+      </nav>
+    </aside>
   </div>
 </BaseLayout>
-<script>
-  const button = document.querySelector<HTMLButtonElement>(".aside-heading button");
-  const nav = document.querySelector<HTMLElement>("#docs-nav");
-  button?.addEventListener("click", () => { const open = button.getAttribute("aria-expanded") === "true"; button.setAttribute("aria-expanded", String(!open)); nav?.toggleAttribute("data-open", !open); });
-  nav?.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => { button?.setAttribute("aria-expanded", "false"); nav.removeAttribute("data-open"); }));
-</script>
 <style>
-  .docs-shell { display: grid; grid-template-columns: 220px minmax(0,760px) 170px; justify-content: space-between; gap: 45px; padding-top: 58px; padding-bottom: 110px; }
-  aside,.on-page { position: sticky; top: 24px; align-self: start; }
-  .aside-heading > span,.on-page > span { display: block; margin-bottom: 14px; color: #fff; font-size: .78rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
-  .aside-heading button { display: none; }
-  aside nav a,.on-page a { display: block; padding: 6px 10px; border-left: 1px solid var(--line); color: var(--quiet); font-size: .84rem; }
-  aside nav a:hover,.on-page a:hover { border-color: var(--blue); color: #fff; }
-  .aside-note { display: flex; flex-direction: column; margin-top: 30px; padding: 14px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); font-size: .76rem; }.aside-note strong { color: var(--green); }.aside-note span { color: var(--quiet); }
-  .docs-content :global(h1) { margin: 0 0 18px; font-size: clamp(2.7rem,6vw,4.4rem); letter-spacing: -.055em; }.docs-content :global(.lead) { margin: 0 0 42px; color: #b5c0cf; font-size: 1.18rem; }.docs-content :global(.callout) { margin: 24px 0; padding: 16px 18px; border-left: 2px solid var(--blue); background: #09111a; color: #bac9d9; }.docs-content :global(.command-grid) { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 22px; }.docs-content :global(.api-card) { padding: 19px; border: 1px solid var(--line); border-radius: 8px; background: linear-gradient(135deg,#0b0f12,#080a0c); }.docs-content :global(.api-card h3) { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; margin: 0 0 8px; }.docs-content :global(.api-card h3 code) { color: var(--cyan); }.docs-content :global(.tag) { padding: 3px 7px; border: 1px solid #33404c; border-radius: 12px; color: #9aabba; font: 650 .65rem var(--sans); text-transform: uppercase; }.docs-content :global(.tag.core) { border-color: #145da2; color: var(--blue-bright); }.docs-content :global(.api-card p) { margin: 6px 0; }.docs-content :global(.signature) { color: #8f9cab; font-family: var(--mono); font-size: .78rem; overflow-wrap: anywhere; }
-  @media (max-width: 1080px) { .docs-shell { grid-template-columns: 200px minmax(0,1fr); }.on-page { display: none; } }
-  @media (max-width: 760px) { .docs-shell { display: block; padding-top: 30px; }.docs-shell aside { position: relative; top: auto; margin-bottom: 38px; }.aside-heading { display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--line); }.aside-heading > span { margin: 0; }.aside-heading button { display: block; padding: 7px 0; border: 0; background: transparent; color: var(--muted); }.aside-heading button i { color: var(--blue); } aside nav { display: none; grid-template-columns: 1fr 1fr; padding: 10px 0; } aside nav[data-open] { display: grid; }.aside-note { display: none; } }
+  .docs-intro {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 32px;
+    padding-top: 73px;
+    padding-bottom: 47px;
+  }
+  .docs-intro-copy h1 {
+    margin: 13px 0 13px;
+    font-size: clamp(2.7rem, 5vw, 4.25rem);
+    line-height: 1.08;
+    letter-spacing: -0.055em;
+  }
+  .docs-intro-copy p {
+    max-width: 650px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+  .docs-intro-note {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 210px;
+    padding: 17px 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .docs-intro-note span,
+  .docs-intro-note small {
+    color: var(--quiet);
+    font-size: 0.78rem;
+  }
+  .docs-intro-note strong {
+    font-size: 1.45rem;
+    line-height: 1.2;
+  }
+  .docs-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 13px;
+    padding-bottom: 62px;
+  }
+  .docs-cards a {
+    position: relative;
+    min-height: 168px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+  }
+  .docs-cards a:hover {
+    border-color: var(--blue);
+    background: var(--surface-raised);
+  }
+  .card-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    background: #213243;
+    color: var(--blue-bright);
+  }
+  .docs-cards strong {
+    display: block;
+    font-size: 0.94rem;
+    font-weight: 650;
+  }
+  .docs-cards p {
+    max-width: 205px;
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+  .card-arrow {
+    position: absolute;
+    right: 18px;
+    top: 24px;
+    color: var(--blue-bright);
+  }
+  .docs-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 840px) 210px;
+    justify-content: space-between;
+    gap: 60px;
+    padding-top: 50px;
+    padding-bottom: 110px;
+    border-top: 1px solid var(--line);
+  }
+  .docs-content {
+    min-width: 0;
+  }
+  .docs-content :global(.code-window) {
+    margin: 20px 0;
+  }
+  .docs-content :global(.code-window + .code-window) {
+    margin-top: -8px;
+  }
+  .docs-content :global(.doc-overview) {
+    margin: 0 0 36px;
+    padding: 21px 23px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .docs-content :global(.doc-overview p) {
+    margin: 0;
+  }
+  .docs-content :global(.callout) {
+    margin: 24px 0;
+    padding: 16px 18px;
+    border-left: 2px solid var(--blue);
+    border-radius: 6px;
+    background: var(--surface);
+    color: #c6d1dc;
+  }
+  .docs-content :global(.command-grid) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 22px;
+  }
+  .docs-content :global(.api-card) {
+    padding: 19px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+  .docs-content :global(.api-card h3) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 8px;
+    font-size: 0.98rem;
+  }
+  .docs-content :global(.api-card h3 code) {
+    color: var(--blue-bright);
+  }
+  .docs-content :global(.tag) {
+    padding: 3px 7px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--quiet);
+    font: 650 0.65rem var(--sans);
+    text-transform: uppercase;
+  }
+  .docs-content :global(.tag.core) {
+    border-color: var(--blue);
+    color: var(--blue-bright);
+  }
+  .docs-content :global(.api-card p) {
+    margin: 6px 0;
+    font-size: 0.89rem;
+  }
+  .docs-content :global(.signature) {
+    color: var(--quiet);
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    overflow-wrap: anywhere;
+  }
+  .docs-index {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+  }
+  .docs-index > span {
+    display: block;
+    margin-bottom: 12px;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+  .docs-index a {
+    display: block;
+    padding: 5px 10px;
+    border-left: 1px solid var(--line);
+    color: var(--quiet);
+    font-size: 0.82rem;
+  }
+  .docs-index a:hover,
+  .docs-index a:focus-visible {
+    border-color: var(--blue);
+    color: var(--text);
+  }
+  @media (max-width: 1000px) {
+    .docs-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .docs-shell {
+      gap: 35px;
+    }
+  }
+  @media (max-width: 760px) {
+    .docs-intro {
+      display: block;
+      padding-top: 40px;
+      padding-bottom: 28px;
+    }
+    .docs-intro-note {
+      display: none;
+    }
+    .docs-cards {
+      gap: 10px;
+      padding-bottom: 40px;
+    }
+    .docs-cards a {
+      min-height: 155px;
+      padding: 15px;
+    }
+    .card-arrow {
+      top: 17px;
+      right: 15px;
+    }
+    .docs-shell {
+      display: block;
+      padding-top: 30px;
+    }
+    .docs-index {
+      display: none;
+    }
+    .docs-content :global(.command-grid) {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 440px) {
+    .docs-cards {
+      grid-template-columns: 1fr;
+    }
+    .docs-cards a {
+      min-height: 0;
+    }
+    .card-icon {
+      margin-bottom: 9px;
+    }
+  }
 </style>

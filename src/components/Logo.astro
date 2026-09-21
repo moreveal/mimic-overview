@@ -1,15 +1,22 @@
 ---
-interface Props { compact?: boolean }
+interface Props {
+  compact?: boolean;
+}
 const { compact = false } = Astro.props;
 ---
+
 <span class="logo" aria-label="Mimic">
-  <svg viewBox="0 0 61 30" aria-hidden="true">
-    <path d="M2 27V3l12.5 15L27 3v24" stroke="#38bfff" />
-    <path d="M34 27V3l12.5 15L59 3v24" stroke="#347fff" />
-  </svg>
   {!compact && <span>mimic</span>}
 </span>
 <style>
-  .logo { display: inline-flex; align-items: center; gap: 6px; color: #f5f7fa; font-family: var(--sans); font-size: 1.5rem; font-weight: 730; font-style: normal; letter-spacing: -.04em; line-height: 1; }
-  svg { width: 64px; height: 32px; fill: none; stroke-width: 3.65; stroke-linecap: square; stroke-linejoin: miter; }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text);
+    font-family: var(--display);
+    font-size: 1.68rem;
+    font-weight: 770;
+    letter-spacing: -0.075em;
+    line-height: 1;
+  }
 </style>

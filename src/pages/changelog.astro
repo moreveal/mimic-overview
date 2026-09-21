@@ -2,14 +2,116 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import releaseNotes from "../../RELEASE_NOTES.md?raw";
 import { marked } from "marked";
+import { ArrowRight, Download } from "lucide-astro";
 const rendered = await marked.parse(releaseNotes);
 ---
-<BaseLayout title="Changelog — Mimic" description="Release notes for Mimic public beta builds.">
-  <section class="page-head container"><span class="eyebrow">Release history</span><h1>Changelog.</h1><p>What changed in each public beta build.</p></section>
-  <section class="container changelog-wrap"><article class="prose panel" set:html={rendered} /><aside><span>Current release</span><strong>v0.1.5</strong><a class="button button-primary" href="https://github.com/moreveal/mimic/releases/latest">Download latest</a><a href="https://github.com/moreveal/mimic/releases">All GitHub releases →</a></aside></section>
+
+<BaseLayout
+  title="Changelog — Mimic"
+  description="What changed in each Mimic release."
+>
+  <section class="page-intro container">
+    <div>
+      <span class="eyebrow">Changelog</span><h1>What’s new in Mimic.</h1><p>
+        Release notes for the public beta, with the details behind each update.
+      </p>
+    </div>
+    <a
+      class="button button-primary"
+      href="https://github.com/moreveal/mimic/releases/latest"
+      ><Download size={18} />Download latest</a
+    >
+  </section>
+  <div class="release-layout container">
+    <article class="release-notes prose" set:html={rendered} />
+    <aside>
+      <span>Latest release</span><strong>v0.1.5</strong><a
+        href="https://github.com/moreveal/mimic/releases"
+        >All releases <ArrowRight size={16} /></a>
+    </aside>
+  </div>
 </BaseLayout>
 <style>
-  .page-head { padding: 75px 0 52px; border-bottom: 1px solid var(--line); }.page-head h1 { margin: 12px 0 8px; font-size: clamp(3rem,7vw,5.8rem); line-height: 1; letter-spacing: -.06em; }.page-head p { margin: 0; color: var(--muted); font-size: 1.15rem; }
-  .changelog-wrap { display: grid; grid-template-columns: minmax(0,780px) 240px; justify-content: space-between; gap: 60px; padding-block: 60px 110px; }.changelog-wrap article { padding: 32px; }.changelog-wrap :global(h1) { margin-top: 0; color: #fff; font-size: 2rem; }.changelog-wrap aside { display: flex; flex-direction: column; align-self: start; position: sticky; top: 24px; gap: 10px; padding: 20px; border-top: 1px solid var(--line); }.changelog-wrap aside > span { color: var(--quiet); font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; }.changelog-wrap aside strong { font-size: 2.3rem; }.changelog-wrap aside > a:last-child { margin-top: 7px; color: var(--blue-bright); font-size: .85rem; }
-  @media (max-width:760px) { .changelog-wrap { grid-template-columns: 1fr; }.changelog-wrap aside { position: static; order: -1; }.changelog-wrap article { padding: 22px; } }
+  .page-intro {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 28px;
+    padding-top: 74px;
+    padding-bottom: 54px;
+  }
+  .page-intro h1 {
+    margin: 15px 0 10px;
+    font-size: clamp(2.8rem, 5vw, 4.3rem);
+    line-height: 1.08;
+    letter-spacing: -0.055em;
+  }
+  .page-intro p {
+    max-width: 620px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+  .page-intro .button {
+    flex: none;
+  }
+  .release-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 840px) 210px;
+    justify-content: space-between;
+    gap: 60px;
+    padding-top: 48px;
+    padding-bottom: 110px;
+    border-top: 1px solid var(--line);
+  }
+  .release-notes {
+    min-width: 0;
+  }
+  .release-notes :global(h1) {
+    margin: 0 0 20px;
+    font-size: 2rem;
+  }
+  .release-layout aside {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .release-layout aside span {
+    color: var(--quiet);
+    font-size: 0.8rem;
+  }
+  .release-layout aside strong {
+    font-size: 1.7rem;
+  }
+  .release-layout aside a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--blue-bright);
+    font-size: 0.85rem;
+  }
+  @media (max-width: 760px) {
+    .page-intro {
+      display: block;
+      padding-top: 40px;
+    }
+    .page-intro .button {
+      margin-top: 24px;
+    }
+    .release-layout {
+      display: block;
+      padding-top: 28px;
+    }
+    .release-layout aside {
+      position: static;
+      margin-top: 35px;
+    }
+  }
 </style>

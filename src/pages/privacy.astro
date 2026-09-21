@@ -1,7 +1,77 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
-<BaseLayout title="Privacy — Mimic" description="How the Mimic website uses privacy-focused traffic analytics.">
-  <section class="legal container prose"><span class="eyebrow">Legal</span><h1>Privacy.</h1><p class="lead">This website uses Cloudflare Web Analytics to understand aggregate traffic and improve the documentation.</p><h2>What is collected</h2><p>Cloudflare Web Analytics provides aggregated measurements such as page views, referring sites, browser type, and approximate country. The site does not use analytics cookies, user accounts, advertising trackers, or cross-site tracking.</p><h2>What we do not collect</h2><p>This website does not ask for names, email addresses, credentials, automation data, or Mimic profile files. Never include secrets, cookies, tokens, or private customer data in a public GitHub issue.</p><h2>External services</h2><p>Download, source, issue, and example links lead to GitHub. The footer also identifies Discord as an optional support channel. Those services apply their own privacy terms when you visit them.</p><h2>Contact</h2><p>For questions, open an issue in the <a href="https://github.com/moreveal/mimic/issues">public source-available repository</a> or contact <strong>moreveal</strong> on Discord.</p></section>
+
+<BaseLayout
+  title="Privacy — Mimic"
+  description="How the Mimic website uses privacy-focused traffic analytics."
+>
+  <section class="privacy-intro container">
+    <span class="eyebrow">Privacy</span><h1>
+      A simple site. Minimal analytics.
+    </h1><p>
+      Here is what this website collects and where external links take you.
+    </p>
+  </section>
+  <div class="privacy-content container">
+    <article class="prose">
+      <h2>Website analytics</h2><p>
+        We use Cloudflare Web Analytics to understand aggregate visits and
+        improve the site and documentation. It reports page views, referring
+        sites, browser type, and approximate country. We do not use analytics
+        cookies, user accounts, ad trackers, or cross-site tracking.
+      </p>
+      <h2>Information you share</h2><p>
+        This site does not ask for your name, email address, credentials,
+        automation data, or Mimic profile files. Please do not put secrets,
+        cookies, tokens, or private customer data in public GitHub issues.
+      </p>
+      <h2>External services</h2><p>
+        Links to downloads, source code, examples, and issues open GitHub. The
+        footer also links to Discord for optional contact. Those services have
+        their own privacy terms.
+      </p>
+      <h2>Questions</h2><p>
+        Open an issue in the <a href="https://github.com/moreveal/mimic/issues"
+          >Mimic repository</a
+        > or contact <strong>moreveal</strong> on Discord.
+      </p>
+    </article>
+  </div>
 </BaseLayout>
-<style>.legal { max-width: 820px; padding-top: 70px; padding-bottom: 110px; }.legal h1 { margin: 12px 0; font-size: clamp(3rem,7vw,5rem); letter-spacing: -.055em; }.legal .lead { font-size: 1.2rem; }</style>
+<style>
+  .privacy-intro {
+    padding-top: 75px;
+    padding-bottom: 52px;
+  }
+  .privacy-intro h1 {
+    max-width: 820px;
+    margin: 16px 0 12px;
+    font-size: clamp(2.7rem, 5vw, 4.3rem);
+    line-height: 1.1;
+    letter-spacing: -0.055em;
+  }
+  .privacy-intro p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+  .privacy-content {
+    padding-top: 25px;
+    padding-bottom: 110px;
+    border-top: 1px solid var(--line);
+  }
+  .privacy-content article {
+    max-width: 790px;
+  }
+  .privacy-content h2:first-child {
+    border: 0;
+    margin-top: 15px;
+  }
+  @media (max-width: 760px) {
+    .privacy-intro {
+      padding-top: 40px;
+      padding-bottom: 35px;
+    }
+  }
+</style>

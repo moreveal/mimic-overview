@@ -2,7 +2,43 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 const base = import.meta.env.BASE_URL;
 ---
-<BaseLayout title="Page not found — Mimic" description="The requested Mimic page could not be found.">
-  <section class="not-found container"><span>404</span><h1>This page doesn’t exist.</h1><p>The runtime is listening. This route isn’t.</p><div><a class="button button-primary" href={base}>Back to Mimic</a><a class="button" href={`${base}docs/`}>Read the docs</a></div></section>
+
+<BaseLayout
+  title="Page not found — Mimic"
+  description="The requested Mimic page could not be found."
+>
+  <section class="not-found container">
+    <span class="eyebrow">Page not found · 404</span><h1>
+      Nothing at this address.
+    </h1><p>Head back to Mimic or find what you need in the docs.</p><div>
+      <a class="button button-primary" href={base}>Back to Mimic</a><a
+        class="button"
+        href={`${base}docs/`}>Read the docs</a>
+    </div>
+  </section>
 </BaseLayout>
-<style>.not-found { min-height: 68vh; display: grid; place-content: center; justify-items: start; padding-block: 80px; }.not-found > span { color: var(--blue); font: 750 1rem var(--mono); }.not-found h1 { margin: 12px 0; font-size: clamp(3rem,8vw,6rem); line-height: 1; letter-spacing: -.06em; }.not-found p { margin: 0 0 28px; color: var(--muted); font-size: 1.15rem; }.not-found div { display: flex; flex-wrap: wrap; gap: 12px; }</style>
+<style>
+  .not-found {
+    min-height: 65vh;
+    display: grid;
+    place-content: center;
+    justify-items: start;
+    padding-block: 80px;
+  }
+  .not-found h1 {
+    margin: 18px 0 10px;
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.055em;
+  }
+  .not-found p {
+    margin: 0 0 28px;
+    color: var(--muted);
+    font-size: 1.08rem;
+  }
+  .not-found div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>
