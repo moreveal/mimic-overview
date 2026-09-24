@@ -57,11 +57,11 @@ on Linux. Performance charts are the retained Windows checkpoint, not Linux resu
 
 ## Is it open source? Where can I download it?
 
-Implementation sources remain private. Ready-to-run binaries are available in
-[GitHub Releases](https://github.com/moreveal/mimic/releases/tag/v0.1.6). This repository contains the product overview,
-benchmarks, and MIT-licensed client examples. Mimic itself uses
-[PolyForm Shield 1.0.0](LICENSE.md), which permits commercial use subject to its
-noncompete provisions and other terms; it is not an open-source license.
+The [Mimic source](https://github.com/moreveal/mimic) is public, and ready-to-run
+binaries are available in [GitHub Releases](https://github.com/moreveal/mimic/releases/tag/v0.1.7).
+This website contains the product overview, benchmarks, and MIT-licensed
+client examples. Mimic itself uses the [Prosperity Public License 3.0.0](LICENSE.md);
+read its terms before use.
 
 ## Can I use it to run untrusted code?
 

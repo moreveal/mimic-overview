@@ -59,4 +59,4 @@ amd64 under WSL2 for the beta release. They do not establish full Playwright or
 Puppeteer compatibility. Screenshots and rendered PDFs are not supported.
 
 The files in this directory are [MIT licensed](LICENSE) so you can adapt them.
-The Mimic executable uses [PolyForm Shield 1.0.0](../LICENSE.md).
+The Mimic executable uses [Prosperity Public License 3.0.0](../LICENSE.md).

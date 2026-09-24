@@ -1,6 +1,6 @@
 # Public Beta
 
-**[Download Mimic for Windows or Linux →](https://github.com/moreveal/mimic/releases/tag/v0.1.6)**
+**[Download Mimic for Windows or Linux →](https://github.com/moreveal/mimic/releases/tag/v0.1.7)**
 
 The beta is publicly downloadable. No Discord invitation is required.
 Start with the [quick start](QUICKSTART.md) or the [runnable examples](examples/README.md).
@@ -28,7 +28,7 @@ For sensitive reproduction details, contact `moreveal` first.
 
 ## License
 
-Mimic uses [PolyForm Shield 1.0.0](LICENSE.md). Commercial use is permitted
-subject to the license's noncompete provisions and other conditions. Client
+Mimic uses the [Prosperity Public License 3.0.0](LICENSE.md); read its terms before
+use. Client
 examples are MIT licensed; bundled dependencies retain their own terms.
 The beta remains in active development and does not promise complete browser compatibility.

@@ -1,8 +1,8 @@
 # Quick start: one profile, then automate
 
-**Public Beta — Windows and Linux.** [Download v0.1.6](https://github.com/moreveal/mimic/releases/tag/v0.1.6) and
+**Public Beta — Windows and Linux.** [Download v0.1.7](https://github.com/moreveal/mimic/releases/tag/v0.1.7) and
 extract the archive. No Go, Rust, Chromium, or GPU is needed. Commands below run
-from the extracted directory. Read [PolyForm Shield 1.0.0](LICENSE.md) before use.
+from the extracted directory. Read [Prosperity Public License 3.0.0](LICENSE.md) before use.
 
 Windows: extract the `.zip` and run `mimic.exe`. Linux: extract the `.tar.gz`
 and run `./mimic`; Ubuntu 24.04+ with glibc 2.39+ and libgcc_s is required.
