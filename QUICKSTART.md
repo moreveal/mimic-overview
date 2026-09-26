@@ -1,6 +1,6 @@
 # Quick start: one profile, then automate
 
-**Public Beta — Windows and Linux.** [Download v0.1.7](https://github.com/moreveal/mimic/releases/tag/v0.1.7) and
+**Public Beta — Windows and Linux.** [Download v0.1.8](https://github.com/moreveal/mimic/releases/tag/v0.1.8) and
 extract the archive. No Go, Rust, Chromium, or GPU is needed. Commands below run
 from the extracted directory. Read [Prosperity Public License 3.0.0](LICENSE.md) before use.
 

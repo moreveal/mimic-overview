@@ -58,7 +58,7 @@ on Linux. Performance charts are the retained Windows checkpoint, not Linux resu
 ## Is it open source? Where can I download it?
 
 The [Mimic source](https://github.com/moreveal/mimic) is public, and ready-to-run
-binaries are available in [GitHub Releases](https://github.com/moreveal/mimic/releases/tag/v0.1.7).
+binaries are available in [GitHub Releases](https://github.com/moreveal/mimic/releases/tag/v0.1.8).
 This website contains the product overview, benchmarks, and MIT-licensed
 client examples. Mimic itself uses the [Prosperity Public License 3.0.0](LICENSE.md);
 read its terms before use.
