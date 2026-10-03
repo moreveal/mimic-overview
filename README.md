@@ -1,19 +1,16 @@
-# Mimic: lightweight browser automation without Chromium
+Legacy redirect for the former Mimic website. Current website: https://mimic.boo. Source: https://github.com/mimic-browser/website
 
-Mimic is a source-available public beta for JavaScript automation and web scraping
-with Playwright, Puppeteer and CDP. Compatibility is partial and workload-dependent;
-Mimic does not provide rendered screenshots or the full Blink engine.
+This repository remains separate from `mimic-browser/website`. GitHub Pages
+serves https://moreveal.github.io/mimic-overview/ without a custom domain.
+Known page paths redirect to their current equivalents. JavaScript preserves
+the query string and fragment; a canonical link, timed meta refresh, and a
+visible link provide a fallback when JavaScript is unavailable.
+The custom 404 applies the same path mapping to older deep links.
 
-Mimic's public source-available repository, documentation, benchmarks,
-downloads, issues, and contribution guidance are maintained at
-[`moreveal/mimic`](https://github.com/moreveal/mimic).
+The full former website and its history remain available at commit
+`4f367e2ef548f2e297b096a6774518f2cc04f903` and in the current website repository.
+Reverting the redirect commit restores the old source tree. Availability of
+these legacy URLs depends on this account and GitHub Pages remaining active.
 
-This repository hosts the website at https://mimic.boo. GitHub Pages deploys
-the static Astro build from `main` using `.github/workflows/pages.yml`.
-The previous https://moreveal.github.io/mimic-overview/ address redirects to
-the custom domain through GitHub Pages, including existing page paths.
-
-The apex domain uses GitHub Pages A records (`185.199.108.153`,
-`185.199.109.153`, `185.199.110.153`, `185.199.111.153`). The optional `www`
-hostname uses a CNAME to `moreveal.github.io`. The custom domain must also be
-configured as `mimic.boo` in the repository's Pages settings.
+Build with `node scripts/build-redirect.mjs`. Deploy through the Pages workflow.
+Retained license and contributor notices apply to the historical website.
